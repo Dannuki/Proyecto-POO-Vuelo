@@ -11,11 +11,11 @@ import modelo.IUsuarioRepositorio;
 import vista.AccesoLogin;
 import control.ControladorLogin;
 
+
 public class Aerolinea {
     
 
     public static void main(String[] args) {
-       
       // 1. Instanciamos la persistencia (El Modelo)
         // Usamos la interfaz para cumplir con SOLID
         IUsuarioRepositorio modeloRepo = new ArchivoUsuarioRepositorio();
@@ -32,9 +32,8 @@ public class Aerolinea {
         vistaLogin.setTitle("Sistema de Aerolíneas - Login");
         vistaLogin.setLocationRelativeTo(null); // Centra la ventana
         vistaLogin.setVisible(true); // Hace que la ventana aparezca  
-        
+    }    
 
         
-    }
 }
 
