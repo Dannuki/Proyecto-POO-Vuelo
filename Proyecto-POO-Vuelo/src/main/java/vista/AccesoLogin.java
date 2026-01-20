@@ -92,7 +92,6 @@ public class AccesoLogin extends javax.swing.JFrame {
         extBtn.setBackground(new java.awt.Color(255, 255, 255));
 
         extSymbol.setFont(new java.awt.Font("Open Sauce One Light", 0, 18)); // NOI18N
-        extSymbol.setForeground(new java.awt.Color(0, 0, 0));
         extSymbol.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         extSymbol.setText("X");
         extSymbol.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -139,31 +138,25 @@ public class AccesoLogin extends javax.swing.JFrame {
         jPanel2.add(banner, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 40));
 
         vuelosFis.setFont(new java.awt.Font("Open Sauce One Black", 0, 36)); // NOI18N
-        vuelosFis.setForeground(new java.awt.Color(0, 0, 0));
         vuelosFis.setText("VuelosFIS");
         jPanel2.add(vuelosFis, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 280, 190, 60));
 
         nombreAereo.setFont(new java.awt.Font("Open Sauce One Light", 0, 18)); // NOI18N
-        nombreAereo.setForeground(new java.awt.Color(0, 0, 0));
         nombreAereo.setText("AerolíneasFIS");
         jPanel2.add(nombreAereo, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 320, 120, 40));
 
         contraLabel.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 24)); // NOI18N
-        contraLabel.setForeground(new java.awt.Color(0, 0, 0));
         contraLabel.setText("Contraseña");
         jPanel2.add(contraLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 240, 140, 50));
 
         InicionLabel.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 36)); // NOI18N
-        InicionLabel.setForeground(new java.awt.Color(0, 0, 0));
         InicionLabel.setText("Iniciar Sesión");
         jPanel2.add(InicionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 50, 250, 50));
 
         usuarioLabel.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 24)); // NOI18N
-        usuarioLabel.setForeground(new java.awt.Color(0, 0, 0));
         usuarioLabel.setText("Usuario");
         jPanel2.add(usuarioLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 120, 100, 50));
 
-        txtUsuario.setBackground(new java.awt.Color(255, 255, 255));
         txtUsuario.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtUsuario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtUsuario.setText("Ingrese su nombre de usuario");
@@ -178,7 +171,6 @@ public class AccesoLogin extends javax.swing.JFrame {
         jPanel2.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 330, 320, 20));
         jPanel2.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 210, 320, 20));
 
-        txtContra.setBackground(new java.awt.Color(255, 255, 255));
         txtContra.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
         txtContra.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtContra.setText("******");
