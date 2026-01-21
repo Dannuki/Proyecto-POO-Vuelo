@@ -12,26 +12,35 @@ public class VentanaRegistro extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaRegistro.class.getName());
 
+    private java.util.List<control.ControladorPasajero> listaControladores = new java.util.ArrayList<>();
     /**
      * Creates new form VentanaRegistro
      */
     public VentanaRegistro() {
         initComponents();
+        
         jTabbedPane.removeAll();
+        
+        control.ControladorPasajero ctrlAdulto = new control.ControladorPasajero();
+    
+        ctrlAdulto.configurarTipo("ADULTO", 1); 
+        
+        listaControladores.add(ctrlAdulto);
         vista.PanelPasajero panelAdulto = new vista.PanelPasajero();
         panelAdulto.configurarTipo("ADULTO", 1); 
-        jTabbedPane.addTab("Adulto 1", panelAdulto);
+        jTabbedPane.addTab("Adulto 1", ctrlAdulto.getVista());
 
 // 2. CREAR SEGUNDO PASAJERO (NIÑO)
-        vista.PanelPasajero panelNino = new vista.PanelPasajero();
-// Le decimos: "Tú eres el Niño 1" (Esto cambiará el título y ocultará el correo)
-        panelNino.configurarTipo("NIÑO", 1);
-        jTabbedPane.addTab("Niño 1", panelNino);
+        control.ControladorPasajero ctrlNino = new control.ControladorPasajero();
+        ctrlNino.configurarTipo("NIÑO", 1);
+        listaControladores.add(ctrlNino); 
+        jTabbedPane.addTab("Niño 1", ctrlNino.getVista());
 
 // 3. (OPCIONAL) PROBAR UN BEBÉ
-        vista.PanelPasajero panelBebe = new vista.PanelPasajero();
-        panelBebe.configurarTipo("BEBE", 1);
-        jTabbedPane.addTab("Bebé 1", panelBebe);
+        control.ControladorPasajero ctrlBebe = new control.ControladorPasajero();
+        ctrlBebe.configurarTipo("BEBE", 1);
+        listaControladores.add(ctrlBebe);
+        jTabbedPane.addTab("Bebé 1", ctrlBebe.getVista());
     }
 
     /**
@@ -45,6 +54,7 @@ public class VentanaRegistro extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane = new javax.swing.JTabbedPane();
+        btnContinuar = new javax.swing.JButton();
         JTitulo = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
 
@@ -58,6 +68,14 @@ public class VentanaRegistro extends javax.swing.JFrame {
         jTabbedPane.setToolTipText("");
         jTabbedPane.setFont(new java.awt.Font("Open Sauce Sans ExtraBold", 0, 14)); // NOI18N
 
+        btnContinuar.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 14)); // NOI18N
+        btnContinuar.setText("Continuar");
+        btnContinuar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnContinuarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -65,12 +83,18 @@ public class VentanaRegistro extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnContinuar)
+                .addGap(73, 73, 73))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnContinuar, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         JTitulo.setBackground(new java.awt.Color(0, 0, 0));
@@ -99,10 +123,10 @@ public class VentanaRegistro extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(JTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(532, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(36, 36, 36))))
         );
@@ -115,11 +139,38 @@ public class VentanaRegistro extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnContinuarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContinuarActionPerformed
+    java.util.List<modelo.Pasajero> pasajerosListos = new java.util.ArrayList<>();
+    
+    //Recorremos la lista de CONTROLADORES que llenamos en el Constructor
+    for (control.ControladorPasajero ctrl : listaControladores) {
+        
+        // A cada controlador le pedimos los datos de su ventana
+        modelo.Pasajero p = ctrl.obtenerDatosControlados();
+        
+        // Si alguno devuelve null, es que faltan datos o la fecha está mal
+        if (p == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Faltan datos o la fecha es inválida en alguno de los pasajeros.");
+            return;
+        }
+        
+        pasajerosListos.add(p);
+    }
+    
+    System.out.println("¡Éxito! Se han recolectado " + pasajerosListos.size() + " pasajeros.");
+    
+    // AQUÍ PONES EL CÓDIGO PARA IR A LA SIGUIENTE VENTANA (ASIENTOS)
+    // Por ejemplo:
+    // VentanaAsientos vAsientos = new VentanaAsientos(pasajerosListos);
+    // vAsientos.setVisible(true);
+    // this.dispose();
+    }//GEN-LAST:event_btnContinuarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -148,6 +199,7 @@ public class VentanaRegistro extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel JTitulo;
+    private javax.swing.JButton btnContinuar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JTabbedPane jTabbedPane;

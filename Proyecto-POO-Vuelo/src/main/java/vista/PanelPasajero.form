@@ -79,78 +79,79 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="56" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Component id="jLabel2" min="-2" pref="336" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="1" attributes="0">
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                  <Component id="cmbDocumento" min="-2" pref="167" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
-                                  <Component id="txtDocumento" min="-2" pref="202" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="txtCorreo" alignment="1" max="32767" attributes="0"/>
+                              <Component id="lblTituloTipo" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="cmbGenero1" min="-2" pref="167" max="-2" attributes="0"/>
-                                      <Component id="txtNombre" min="-2" pref="168" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="txtApellido" max="32767" attributes="0"/>
-                                      <Component id="cmbNacionalidad" pref="168" max="32767" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <Component id="txtFechaNac" alignment="1" max="32767" attributes="0"/>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <EmptySpace min="1" pref="1" max="-2" attributes="0"/>
-                                          <Component id="jLabel1" min="-2" pref="336" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Component id="lblTituloTipo" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                                  <Component id="jLabel1" min="-2" pref="336" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="txtNombre" max="32767" attributes="0"/>
+                              <Component id="cmbGenero1" pref="179" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="txtApellido" max="32767" attributes="0"/>
+                              <Component id="cmbNacionalidad" pref="179" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="1" pref="1" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Component id="txtCorreo" alignment="0" max="32767" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jLabel2" min="-2" pref="336" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Component id="cmbDocumento" min="-2" pref="165" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="txtDocumento" min="-2" pref="214" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="txtFechaNac" alignment="0" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
+                  <EmptySpace min="-2" pref="67" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
                   <Component id="lblTituloTipo" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="txtNombre" alignment="3" min="-2" pref="51" max="-2" attributes="0"/>
-                      <Component id="txtApellido" alignment="3" min="-2" pref="51" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="txtApellido" min="-2" pref="41" max="-2" attributes="0"/>
+                      <Component id="txtNombre" alignment="0" min="-2" pref="41" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="cmbGenero1" alignment="3" min="-2" pref="51" max="-2" attributes="0"/>
-                      <Component id="cmbNacionalidad" alignment="3" min="-2" pref="51" max="-2" attributes="0"/>
+                      <Component id="cmbGenero1" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="cmbNacionalidad" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel1" min="-2" pref="30" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="txtFechaNac" min="-2" pref="44" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="cmbDocumento" alignment="3" min="-2" pref="51" max="-2" attributes="0"/>
-                      <Component id="txtDocumento" alignment="3" min="-2" pref="51" max="-2" attributes="0"/>
+                  <Component id="txtFechaNac" min="-2" pref="39" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="cmbDocumento" pref="42" max="32767" attributes="0"/>
+                      <Component id="txtDocumento" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="txtCorreo" min="-2" pref="51" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="109" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -199,7 +200,7 @@
               <Font name="Open Sauce One Light" size="12" style="0"/>
             </Property>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="13">
+              <StringArray count="14">
                 <StringItem index="0" value="Nacionalidad..."/>
                 <StringItem index="1" value="Argentino"/>
                 <StringItem index="2" value="Boliviano"/>
@@ -208,11 +209,12 @@
                 <StringItem index="5" value="Colombiano"/>
                 <StringItem index="6" value="Costarricense"/>
                 <StringItem index="7" value="Cubano"/>
-                <StringItem index="8" value="Salvadore&#xf1;o"/>
-                <StringItem index="9" value="Hondure&#xf1;o"/>
-                <StringItem index="10" value="Mexicano"/>
-                <StringItem index="11" value="Nicarag&#xfc;ense"/>
-                <StringItem index="12" value="Paname&#xf1;o"/>
+                <StringItem index="8" value="Ecuatoriano"/>
+                <StringItem index="9" value="Salvadore&#xf1;o"/>
+                <StringItem index="10" value="Hondure&#xf1;o"/>
+                <StringItem index="11" value="Mexicano"/>
+                <StringItem index="12" value="Nicarag&#xfc;ense"/>
+                <StringItem index="13" value="Paname&#xf1;o"/>
               </StringArray>
             </Property>
           </Properties>
@@ -226,7 +228,13 @@
               <Format format="##-##-####" subtype="-1" type="5"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value=""/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Open Sauce One Light" size="14" style="0"/>
+            </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtFechaNacActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
