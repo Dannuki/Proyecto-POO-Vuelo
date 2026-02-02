@@ -1,1 +1,4 @@
 Vuelo 001: Quito-Guayaquil | 10:00 AM | $50
+A319,Quito,Guayaquil,2026-02-02,2026-02-04,09:30,20:30,200.0,Airbus A319
+oalao,Quito,Cuenca,2026-02-02,2026-02-05,03:30,11:30,500.0,Airbus A320neo
+Alol,Quito,Cuenca,2026-02-03,2026-02-12,03:00,03:00,500.0,Airbus A319
