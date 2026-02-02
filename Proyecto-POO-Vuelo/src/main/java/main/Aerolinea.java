@@ -32,6 +32,8 @@ public class Aerolinea {
         vistaLogin.setTitle("Sistema de Aerolíneas - Login");
         vistaLogin.setLocationRelativeTo(null); // Centra la ventana
         vistaLogin.setVisible(true); // Hace que la ventana aparezca  
+        
+        
     }    
 
         
