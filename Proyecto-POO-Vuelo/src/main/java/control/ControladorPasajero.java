@@ -38,7 +38,7 @@ public class ControladorPasajero {
     }
 
     //Método para pedir los datos
-    public Pasajero obtenerDatosControlados() {
+    public Pasajero obtenerDatosControlados() throws Exception {
         return vista.obtenerDatos();
     }
 }

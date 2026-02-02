@@ -3,6 +3,7 @@ vista\AccesoLogin$4.class
 vista\PanelPasajero$9.class
 vista\PanelPasajero$12.class
 control\ControladorPasajero.class
+servicios\GestorArchivos.class
 vista\VentanaRegistro.class
 control\ControladorLogin$1.class
 vista\PanelPasajero$6.class

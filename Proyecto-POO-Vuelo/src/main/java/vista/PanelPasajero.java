@@ -4,11 +4,13 @@
  */
 package vista;
 
+import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
-import java.awt.Color;
+import java.time.Period;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
 
 /**
  *
@@ -16,37 +18,32 @@ import java.time.format.DateTimeFormatter;
  */
 public class PanelPasajero extends javax.swing.JPanel {
 
+    private javax.swing.border.Border bordeOriginal;
+    
     private String tipoPasajeroActual = "ADULTO";
     
     public PanelPasajero() {
-        
     initComponents();
-    
     Color grisFondo = new Color(153, 153, 153);
-    
-    // Nombre
-    txtNombre.setText("Nombre:");
-    txtNombre.setForeground(grisFondo);
-    
-    // Apellido
-    txtApellido.setText("Apellido:");
-    txtApellido.setForeground(grisFondo);
-    
-    // Correo
-    txtCorreo.setText("Correo Electrónico."); 
-    txtCorreo.setForeground(grisFondo);
+    txtNombre.setText("Nombre:");     txtNombre.setForeground(grisFondo);
+    txtApellido.setText("Apellido:"); txtApellido.setForeground(grisFondo);
+    txtCorreo.setText("Correo Electrónico."); txtCorreo.setForeground(grisFondo);
 
-    //Bordes de los cuadros para que se vea más bonito
-    Border bordeLinea = BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true);
+    // --- CREACIÓN DE TU BORDE BONITO ---
+    javax.swing.border.Border bordeLinea = javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 200, 200), 1, true);
+    javax.swing.border.Border margen = javax.swing.BorderFactory.createEmptyBorder(5, 10, 5, 10);
+    javax.swing.border.Border bordeFinal = javax.swing.BorderFactory.createCompoundBorder(bordeLinea, margen);
     
-    Border margen = BorderFactory.createEmptyBorder(5, 10, 5, 10);
-    
-    Border bordeFinal = BorderFactory.createCompoundBorder(bordeLinea, margen);
-    
+    // Aplicamos el borde bonito
     txtNombre.setBorder(bordeFinal);
     txtApellido.setBorder(bordeFinal);
     txtFechaNac.setBorder(bordeFinal);
     txtCorreo.setBorder(bordeFinal);
+    txtDocumento.setBorder(bordeFinal); // No olvides este
+
+    // --- CORRECCIÓN AQUÍ ---
+    // Guardamos TU borde bonito como el "original" para restaurarlo después
+    this.bordeOriginal = bordeFinal;
     
 }
     //Para que el sistema diferencia entre adulto, niño y bebe, creamos un metodo que muestre y oculte ciertas pestañas dependiendo la funconalidad
@@ -63,7 +60,7 @@ public class PanelPasajero extends javax.swing.JPanel {
         txtCorreo.setVisible(false); 
         jLabel2.setVisible(false);
         
-    } else if (tipo.equals("BEBE")) {
+    } else if (tipo.equals("BEBÉ")) {
         lblTituloTipo.setText("DATOS DEL BEBÉ " + numero + " (0-23 Meses)");
         // Los bebés no tienen correo, se oculta
         txtCorreo.setVisible(false);
@@ -75,34 +72,123 @@ public class PanelPasajero extends javax.swing.JPanel {
     return tipoPasajeroActual;
     }
     
-    public modelo.Pasajero obtenerDatos() {
-    // 1. Capturar los textos de las cajitas
-    String nombre = txtNombre.getText();
-    String apellido = txtApellido.getText();
-    String correo = txtCorreo.getText();
-    String textoFecha = txtFechaNac.getText();
-    String ID = txtDocumento.getText();
-    
-    String genero = cmbGenero1.getSelectedItem().toString();
-    String nacionalidad = cmbNacionalidad.getSelectedItem().toString();
-    
-    // 2. Validaciones básicas (Vacíos o Placeholders)
-    if (nombre.equals("Nombre:") || nombre.isEmpty()) return null;
-    if (apellido.equals("Apellido:") || apellido.isEmpty()) return null;
-    // Si la fecha está vacía o tiene el formato vacío de la máscara
-    if (textoFecha.trim().isEmpty() || textoFecha.equals("- -")) return null; 
+    // Asegúrate de tener estos imports arriba
 
-    // Conversión de Fecha
-    try {
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate fechaReal = LocalDate.parse(textoFecha, fmt);
+public modelo.Pasajero obtenerDatos() throws Exception {
+    
+    // 1. LIMPIEZA VISUAL (Reseteamos bordes)
+    javax.swing.border.Border bordeRojo = javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED, 2);
+    
+    txtNombre.setBorder(bordeOriginal);
+    txtApellido.setBorder(bordeOriginal);
+    txtFechaNac.setBorder(bordeOriginal);
+    txtDocumento.setBorder(bordeOriginal);
+
+    // 2. VALIDACIONES DE TEXTO BÁSICAS
+    if (txtNombre.getText().trim().isEmpty() || txtNombre.getText().equals("Nombre:")) {
+        txtNombre.setBorder(bordeRojo);
+        throw new Exception("El campo 'Nombre' es obligatorio."); 
+    }
+    if (txtApellido.getText().trim().isEmpty() || txtApellido.getText().equals("Apellido:")) {
+        txtApellido.setBorder(bordeRojo);
+        throw new Exception("El campo 'Apellido' es obligatorio.");
+    }
+    
+    // 3. VALIDACIÓN DE COMBOS (Género, Nacionalidad y Documento)
+    if (cmbGenero1.getSelectedIndex() == 0) throw new Exception("Selecciona un Género.");
+    if (cmbNacionalidad.getSelectedIndex() == 0) throw new Exception("Selecciona una Nacionalidad.");
+    if (cmbDocumento.getSelectedIndex() == 0) {
+        throw new Exception("Selecciona el Tipo de Documento.");
+    }
+    // Validar que escribió el número
+    String docNumero = txtDocumento.getText().trim();
+    if (docNumero.isEmpty() || docNumero.equals("")) { // Agrega tu placeholder si tienes
+        txtDocumento.setBorder(bordeRojo);
+        throw new Exception("El número de documento es obligatorio.");
+    }
+    
+    if (txtCorreo.isVisible()) {
+        String correo = txtCorreo.getText().trim();
         
-        return new modelo.Pasajero(nombre, apellido, fechaReal, genero, nacionalidad, ID);
+        // Si está vacío 
+        if (correo.isEmpty() || correo.equals("Correo Electrónico.")) {
+            txtCorreo.setBorder(bordeRojo);
+            throw new Exception("El correo electrónico es obligatorio.");
+        }
+        
+        // (Opcional) Validación básica de que tenga una arroba
+        if (!correo.contains("@") || !correo.contains(".")) {
+             txtCorreo.setBorder(bordeRojo);
+             throw new Exception("Ingresa un correo válido (ej: usuario@mail.com).");
+        }
+       
+    }
+
+    //FECHAS Y EDADES
+    String textoFecha = txtFechaNac.getText();
+    java.time.LocalDate fechaNacimiento = null;
+    
+    if (textoFecha.trim().isEmpty() || textoFecha.equals("- -")) {
+        txtFechaNac.setBorder(bordeRojo);
+        throw new Exception("La fecha es obligatoria.");
+    }
+    
+    try {
+        java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        fechaNacimiento = java.time.LocalDate.parse(textoFecha, fmt);
+        
+        if (fechaNacimiento.isAfter(java.time.LocalDate.now())) {
+             txtFechaNac.setBorder(bordeRojo);
+             throw new Exception("La fecha no puede ser futura.");
+        }
+
+        int edad = java.time.Period.between(fechaNacimiento, java.time.LocalDate.now()).getYears();
+        String titulo = lblTituloTipo.getText().toUpperCase(); 
+
+        // Reglas de edad (Ajustadas a tu gusto)
+        if (titulo.contains("BEBÉ") && edad > 2) {
+            txtFechaNac.setBorder(bordeRojo);
+            throw new Exception("Error en BEBÉ: Debe tener máximo 2 años.");
+        } 
+        else if (titulo.contains("NIÑO") && (edad < 2 || edad >= 12)) {
+             txtFechaNac.setBorder(bordeRojo);
+             throw new Exception("Error en NIÑO: Debe tener entre 2 y 11 años.");
+        } 
+        else if (titulo.contains("ADULTO") && edad < 12) {
+             txtFechaNac.setBorder(bordeRojo);
+             throw new Exception("Error en ADULTO: Debe tener 12 años o más.");
+        }
 
     } catch (Exception e) {
-        System.out.println("Fecha inválida: " + textoFecha);
-        return null;
+        if (e.getMessage().startsWith("Error") || e.getMessage().startsWith("La fecha")) throw e; 
+        txtFechaNac.setBorder(bordeRojo);
+        throw new Exception("Fecha inválida (Formato: dd-mm-aaaa).");
     }
+
+    String documentoFinal = cmbDocumento.getSelectedItem().toString() + ": " + docNumero;
+
+    // --- LÓGICA PARA CORREO DE MENORES ---
+    String correoFinal = "";
+
+    // Preguntamos: ¿La cajita de correo se ve en la pantalla?
+    if (txtCorreo.isVisible()) {
+        // Si se ve (es Adulto), guardamos lo que escribió
+        correoFinal = txtCorreo.getText();
+    } else {
+        // Si NO se ve (es Niño o Bebé), guardamos "N/A"
+        correoFinal = "N/A";
+    }
+
+    // RETORNO CON EL DATO CORREGIDO
+    return new modelo.Pasajero(
+            txtNombre.getText(), 
+            txtApellido.getText(), 
+            fechaNacimiento,
+            cmbGenero1.getSelectedItem().toString(), 
+            cmbNacionalidad.getSelectedItem().toString(),
+            documentoFinal,
+            correoFinal
+    );
 }
 
     /**
