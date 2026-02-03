@@ -13,6 +13,9 @@ import javax.swing.table.TableRowSorter;
 import modelo.Avion;
 import modelo.Ruta;
 import modelo.Vuelo;
+import control.ManejadorArchivos;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -25,35 +28,56 @@ public class Catalogo extends javax.swing.JFrame {
     /**
      * Creates new form Catálogo
      */
-    public Catalogo() {
-        initComponents();
-        
-    LocalDate hoy = LocalDate.now();
-    dateSalida.getSettings().setDateRangeLimits(hoy, null);
-    dateRegreso.getSettings().setDateRangeLimits(hoy, null);
-        
-            // Restricción para el Precio: Solo números positivos y un punto decimal
-    txtFiltroPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
-        public void keyTyped(java.awt.event.KeyEvent evt) {
-            char c = evt.getKeyChar();
-            if (!(Character.isDigit(c) || c == '.')) {
-                evt.consume(); // Bloquea cualquier cosa que no sea número o punto
-            }
-            if (c == '.' && txtFiltroPrecio.getText().contains(".")) {
-                evt.consume(); // Bloquea si ya existe un punto
-            }
-        }
+    
+public Catalogo() {
+    initComponents();
+    
+        // 1. Configuración del Sorter para filtrado múltiple
+    DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+    
+    dateSalida.getSettings().setFormatForDatesCommonEra("yyyy-MM-dd");
+    dateRegreso.getSettings().setFormatForDatesCommonEra("yyyy-MM-dd");
+    
+    sorter.setComparator(8, (o1, o2) -> {
+        // Convertimos los objetos a Double para que la tabla sepa que son dinero
+        Double d1 = Double.valueOf(o1.toString());
+        Double d2 = Double.valueOf(o2.toString());
+        return d1.compareTo(d2);
     });
 
-    // Restricción para el Código: Solo letras y números (sin espacios)
-    txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
-        public void keyTyped(java.awt.event.KeyEvent evt) {
-            char c = evt.getKeyChar();
-            if (!Character.isLetterOrDigit(c)) {
-                evt.consume();
+    
+        tblGestionVuelos.setRowSorter(sorter);
+        // 2. Cargar los 20 vuelos nacionales
+        cargarDatosDesdeArchivo();
+
+        // 3. Tus restricciones de fecha (Mantener)
+        LocalDate hoy = LocalDate.now();
+        dateSalida.getSettings().setDateRangeLimits(hoy, null);
+        dateRegreso.getSettings().setDateRangeLimits(hoy, null);
+
+        // 4. Tus restricciones de teclado para Precio (Mantener)
+        txtFiltroPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (!(Character.isDigit(c) || c == '.')) {
+                    evt.consume();
+                }
+                if (c == '.' && txtFiltroPrecio.getText().contains(".")) {
+                    evt.consume();
+                }
             }
-        }
-    });
+        });
+
+        // 5. Tus restricciones de teclado para Código (Mantener)
+        txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (!Character.isLetterOrDigit(c)) {
+                    evt.consume();
+                }
+            }
+        });
     }
 
     /**
@@ -78,7 +102,7 @@ public class Catalogo extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         btnCargarDatos = new javax.swing.JButton();
         btnNuevoVuelo = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnLimpiar = new javax.swing.JButton();
         btnEliminarVuelo = new javax.swing.JButton();
         cbxTipoAvion = new javax.swing.JComboBox<>();
         txtFiltroPrecio = new javax.swing.JTextField();
@@ -95,6 +119,7 @@ public class Catalogo extends javax.swing.JFrame {
         cbxModo = new javax.swing.JComboBox<>();
         tmPickSalida = new com.github.lgooddatepicker.components.TimePicker();
         tmPickLlegada = new com.github.lgooddatepicker.components.TimePicker();
+        JTitulo = new javax.swing.JLabel();
 
         jInternalFrame1.setVisible(true);
 
@@ -113,6 +138,8 @@ public class Catalogo extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
+
+        jScrollPane1.setForeground(new java.awt.Color(38, 61, 141));
 
         tblGestionVuelos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -133,8 +160,8 @@ public class Catalogo extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblGestionVuelos.setForeground(new java.awt.Color(255, 255, 255));
-        tblGestionVuelos.setGridColor(new java.awt.Color(255, 153, 102));
+        tblGestionVuelos.setBackground(new java.awt.Color(204, 204, 204));
+        tblGestionVuelos.setGridColor(new java.awt.Color(38, 61, 141));
         tblGestionVuelos.setSelectionBackground(new java.awt.Color(69, 130, 177));
         tblGestionVuelos.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblGestionVuelos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -166,23 +193,27 @@ public class Catalogo extends javax.swing.JFrame {
 
         dateSalida.setBackground(new java.awt.Color(69, 130, 177));
         dateSalida.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
-        dateSalida.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        dateSalida.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
 
         jLabelFechaSalida.setText("Fecha - Salida");
-        jLabelFechaSalida.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabelFechaSalida.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabelFechaSalida.setForeground(new java.awt.Color(38, 61, 141));
 
         jLabelDestino.setText("Destino");
-        jLabelDestino.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabelDestino.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabelDestino.setForeground(new java.awt.Color(38, 61, 141));
 
         jLabelOrigen.setText("Origen");
-        jLabelOrigen.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabelOrigen.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabelOrigen.setForeground(new java.awt.Color(38, 61, 141));
 
         jLabel5.setText("Código");
-        jLabel5.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(38, 61, 141));
 
         btnCargarDatos.setText("Cargar Datos");
         btnCargarDatos.setBackground(new java.awt.Color(69, 130, 177));
-        btnCargarDatos.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 14)); // NOI18N
+        btnCargarDatos.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 12)); // NOI18N
         btnCargarDatos.setForeground(new java.awt.Color(255, 255, 255));
         btnCargarDatos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -192,7 +223,7 @@ public class Catalogo extends javax.swing.JFrame {
 
         btnNuevoVuelo.setText("Nuevo Vuelo");
         btnNuevoVuelo.setBackground(new java.awt.Color(69, 130, 177));
-        btnNuevoVuelo.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 14)); // NOI18N
+        btnNuevoVuelo.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 12)); // NOI18N
         btnNuevoVuelo.setForeground(new java.awt.Color(255, 255, 255));
         btnNuevoVuelo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -200,19 +231,19 @@ public class Catalogo extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Limpiar");
-        jButton1.setBackground(new java.awt.Color(69, 130, 177));
-        jButton1.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnLimpiar.setText("Limpiar");
+        btnLimpiar.setBackground(new java.awt.Color(69, 130, 177));
+        btnLimpiar.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 12)); // NOI18N
+        btnLimpiar.setForeground(new java.awt.Color(255, 255, 255));
+        btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnLimpiarActionPerformed(evt);
             }
         });
 
         btnEliminarVuelo.setText("Eliminar Vuelo");
         btnEliminarVuelo.setBackground(new java.awt.Color(69, 130, 177));
-        btnEliminarVuelo.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 14)); // NOI18N
+        btnEliminarVuelo.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 12)); // NOI18N
         btnEliminarVuelo.setForeground(new java.awt.Color(255, 255, 255));
         btnEliminarVuelo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -220,13 +251,18 @@ public class Catalogo extends javax.swing.JFrame {
             }
         });
 
-        cbxTipoAvion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Airbus A319", "Airbus A320neo", "Airbus A321", "Boeing 737-800", "ATR 72-600" }));
+        cbxTipoAvion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-----------", "Airbus A319", "Airbus A320neo", "Airbus A321", "Boeing 737-800", "ATR 72-600" }));
         cbxTipoAvion.setBackground(new java.awt.Color(69, 130, 177));
-        cbxTipoAvion.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        cbxTipoAvion.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         cbxTipoAvion.setForeground(new java.awt.Color(255, 255, 255));
+        cbxTipoAvion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxTipoAvionActionPerformed(evt);
+            }
+        });
 
+        txtFiltroPrecio.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtFiltroPrecio.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
-        txtFiltroPrecio.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
         txtFiltroPrecio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtFiltroPrecioActionPerformed(evt);
@@ -239,31 +275,37 @@ public class Catalogo extends javax.swing.JFrame {
         });
 
         jLabel1.setText("Presupuesto");
-        jLabel1.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(38, 61, 141));
 
         jLabel4.setText("Avión");
-        jLabel4.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(38, 61, 141));
 
         jLabel2.setText("Modo");
-        jLabel2.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(38, 61, 141));
         jLabel2.setToolTipText("");
 
         jLabel6.setText("Hora - Salida");
-        jLabel6.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(38, 61, 141));
 
         jLabel7.setText("Hora - Llegada");
-        jLabel7.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(38, 61, 141));
 
         jLabelFechaRetorno.setText("Fecha - Regreso");
-        jLabelFechaRetorno.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        jLabelFechaRetorno.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+        jLabelFechaRetorno.setForeground(new java.awt.Color(38, 61, 141));
 
         dateRegreso.setBackground(new java.awt.Color(69, 130, 177));
         dateRegreso.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
-        dateRegreso.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        dateRegreso.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
 
-        cbxDestino.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Quito", "Guayaquil", "Cuenca" }));
+        cbxDestino.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-----------", "Quito", "Guayaquil", "Cuenca" }));
         cbxDestino.setBackground(new java.awt.Color(69, 130, 177));
-        cbxDestino.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        cbxDestino.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         cbxDestino.setForeground(new java.awt.Color(255, 255, 255));
         cbxDestino.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -271,9 +313,9 @@ public class Catalogo extends javax.swing.JFrame {
             }
         });
 
-        cbxOrigen.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Quito", "Guayaquil", "Cuenca" }));
+        cbxOrigen.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-----------", "Quito", "Guayaquil", "Cuenca" }));
         cbxOrigen.setBackground(new java.awt.Color(69, 130, 177));
-        cbxOrigen.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        cbxOrigen.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         cbxOrigen.setForeground(new java.awt.Color(255, 255, 255));
         cbxOrigen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -281,13 +323,18 @@ public class Catalogo extends javax.swing.JFrame {
             }
         });
 
+        txtCodigo.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtCodigo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
         txtCodigo.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        txtCodigo.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCodigoKeyReleased(evt);
+            }
+        });
 
-        cbxModo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Directo" }));
+        cbxModo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-----------", "Directo" }));
         cbxModo.setBackground(new java.awt.Color(69, 130, 177));
-        cbxModo.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        cbxModo.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         cbxModo.setForeground(new java.awt.Color(255, 255, 255));
         cbxModo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -297,102 +344,102 @@ public class Catalogo extends javax.swing.JFrame {
 
         tmPickSalida.setBackground(new java.awt.Color(69, 130, 177));
         tmPickSalida.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
-        tmPickSalida.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        tmPickSalida.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
 
         tmPickLlegada.setBackground(new java.awt.Color(69, 130, 177));
         tmPickLlegada.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
-        tmPickLlegada.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        tmPickLlegada.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
+
+        JTitulo.setBackground(new java.awt.Color(0, 0, 0));
+        JTitulo.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 24)); // NOI18N
+        JTitulo.setText("Selección de Voleto");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabelDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabelOrigen, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabelFechaSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(161, 161, 161)
-                                        .addComponent(jLabelFechaRetorno, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(286, 286, 286))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGap(0, 0, Short.MAX_VALUE)
-                                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(txtFiltroPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(cbxDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(tmPickLlegada, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(0, 0, Short.MAX_VALUE))))))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
                                 .addGap(18, 18, 18)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(cbxOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtCodigo, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(cbxModo, 0, 125, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(cbxTipoAvion, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabelFechaSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(dateSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(96, 96, 96)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabelFechaRetorno, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(dateRegreso, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabelDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(cbxDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(tmPickSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(txtCodigo, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(cbxModo, 0, 125, Short.MAX_VALUE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(cbxTipoAvion, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(tmPickLlegada, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(65, 65, 65))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnCargarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26)
                                 .addComponent(btnNuevoVuelo, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnCargarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnEliminarVuelo, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(JTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(286, 286, 286)
-                                .addComponent(dateRegreso, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(dateSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(143, 143, 143)
+                                .addComponent(cbxOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(tmPickSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtFiltroPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addGap(16, 16, 16)
+                .addComponent(JTitulo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnNuevoVuelo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCargarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEliminarVuelo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(43, 43, 43)
+                    .addComponent(btnNuevoVuelo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCargarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEliminarVuelo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -400,7 +447,7 @@ public class Catalogo extends javax.swing.JFrame {
                     .addComponent(cbxModo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbxTipoAvion, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbxOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -408,25 +455,25 @@ public class Catalogo extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtFiltroPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tmPickSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbxDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tmPickLlegada, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelFechaSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelFechaRetorno, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dateSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(dateRegreso, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(115, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -437,18 +484,18 @@ public class Catalogo extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void cbxDestinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxDestinoActionPerformed
-        // TODO add your handling code here:
+        aplicarFiltros();
     }//GEN-LAST:event_cbxDestinoActionPerformed
 
     private void cbxOrigenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxOrigenActionPerformed
-        // TODO add your handling code here:
+        aplicarFiltros();
     }//GEN-LAST:event_cbxOrigenActionPerformed
 
     private void cbxModoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxModoActionPerformed
@@ -456,89 +503,14 @@ public class Catalogo extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxModoActionPerformed
 
     private void btnNuevoVueloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoVueloActionPerformed
-        try {
-            // 1. Validar Código
-            if (txtCodigo.getText().trim().isEmpty()) {
-                txtCodigo.requestFocus(); // El cursor salta aquí
-                throw new Exception("Falta ingresar el CÓDIGO del vuelo.");
-            }
-
-            // 2. Validar Precio
-            if (txtFiltroPrecio.getText().trim().isEmpty()) {
-                txtFiltroPrecio.requestFocus(); // El cursor salta aquí
-                throw new Exception("Falta ingresar el PRECIO del vuelo.");
-            }
-
-            // 3. Validar Fechas (Como son DatePickers, no usamos requestFocus, solo el aviso)
-            if (dateSalida.getDate() == null) {
-                throw new Exception("Falta seleccionar la FECHA DE SALIDA.");
-            }
-            if (dateRegreso.getDate() == null) {
-                throw new Exception("Falta seleccionar la FECHA DE REGRESO.");
-            }
-
-            // 4. Validar Horas
-            if (tmPickSalida.getTime() == null) {
-                throw new Exception("Falta seleccionar la HORA DE SALIDA.");
-            }
-            if (tmPickLlegada.getTime() == null) {
-                throw new Exception("Falta seleccionar la HORA DE LLEGADA.");
-            }
-
-            // 2. Validar que Origen y Destino no sean iguales
-            String origen = cbxOrigen.getSelectedItem().toString();
-            String destino = cbxDestino.getSelectedItem().toString();
-            if (origen.equals(destino)) {
-                throw new Exception("El origen y el destino no pueden ser el mismo.");
-            }
-
-            // 3. Validar Rango de Fechas (Regreso no puede ser antes que Salida)
-            if (dateRegreso.getDate().isBefore(dateSalida.getDate())) {
-                throw new Exception("La fecha de regreso debe ser posterior "
-                        + "o igual a la de salida.");
-            }
-
-            // 4. Crear los objetos (Composición)
-            Ruta ruta = new Ruta(origen, destino);
-            Avion avion = new Avion(cbxTipoAvion.getSelectedItem().toString());
-            Vuelo vuelo = new Vuelo(
-                    txtCodigo.getText(), ruta, avion,
-                    dateSalida.getDateStringOrEmptyString(),
-                    dateRegreso.getDateStringOrEmptyString(),
-                    tmPickSalida.getTimeStringOrEmptyString(),
-                    tmPickLlegada.getTimeStringOrEmptyString(),
-                    Double.parseDouble(txtFiltroPrecio.getText())
-            );
-
-            // 5. Agregar a la Tabla
-            DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-            modelo.addRow(new Object[]{
-                vuelo.getCodigo(), avion.getNombre(), origen, destino,
-                vuelo.getHoraSalida(), vuelo.getHoraLlegada(),
-                vuelo.getFechaSalida(), vuelo.getFechaRegreso(),
-                vuelo.getPrecioBase()
-            });
-
-            // 6. Guardar en el archivo .txt
-            guardarEnArchivo(vuelo);
-            lblResumen.setText("Vuelo " + vuelo.getCodigo()
-                    + " registrado y guardado.");
+        int respuesta = javax.swing.JOptionPane.showConfirmDialog(this,
+                "¿Desea crear un nuevo vuelo?", "Confirmar",
+                javax.swing.JOptionPane.YES_NO_OPTION);
+        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
             limpiarCampos();
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(),
-                    "Error de Registro", 0);
+            txtCodigo.requestFocus();
         }
-    }
-
-    // Método para guardar en el archivo de texto
-    private void guardarEnArchivo(Vuelo v) {
-        try (java.io.FileWriter fw = new java.io.FileWriter("vuelos.txt", true); java.io.PrintWriter pw = new java.io.PrintWriter(fw)) {
-            pw.println(v.toString()); // Usamos el toString que creamos en la clase Vuelo
-        } catch (Exception e) {
-            // El mensaje ahora mostrará exactamente qué Exception se disparó arriba
-            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(),
-                    "Campo Requerido", javax.swing.JOptionPane.WARNING_MESSAGE);
-        }
+        // Si elige NO, no se borra nada
     }//GEN-LAST:event_btnNuevoVueloActionPerformed
 
     private void txtFiltroPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFiltroPrecioActionPerformed
@@ -549,83 +521,153 @@ public class Catalogo extends javax.swing.JFrame {
         } catch(Exception e) {}
     }//GEN-LAST:event_txtFiltroPrecioActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        limpiarCampos();
-        lblResumen.setText("Formulario reiniciado.");
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+        // 1. Limpiar TextFields
+        txtCodigo.setText("");
+        txtFiltroPrecio.setText("");
+
+        // 2. Resetear ComboBoxes
+        cbxTipoAvion.setSelectedIndex(0);
+        cbxOrigen.setSelectedIndex(0);
+        cbxDestino.setSelectedIndex(0);
+        cbxModo.setSelectedIndex(0);
+
+        // 3. LIMPIAR FECHAS Y HORAS (LGoodDatePicker)
+        dateSalida.clear();
+        dateRegreso.clear(); 
+        tmPickSalida.clear();
+        tmPickLlegada.clear(); 
+
+        // 4. Limpiar el Label de resumen si tienes uno
+        lblResumen.setText("");
+
+        // 5. REFRESCAR LA TABLA
+        aplicarFiltros(); 
+    }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void btnCargarDatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarDatosActionPerformed
-        control.ManejadorArchivos manejador = new control.ManejadorArchivos();
-        java.util.ArrayList<modelo.Vuelo> lista = manejador.cargarVuelos();
+        if (validarCamposCompletos()) {
+            try {
+                // 1. Capturar datos de entrada
+                String codigoIngresado = txtCodigo.getText().trim();
+                String nombreAvion = cbxTipoAvion.getSelectedItem().toString();
+                String origen = cbxOrigen.getSelectedItem().toString();
+                String destino = cbxDestino.getSelectedItem().toString();
+                String modo = cbxModo.getSelectedItem().toString();
 
-        try {
-            // Llamamos a tu método de carga
-            cargarDatosDesdeArchivo();
+                // 2. Validaciones de Seguridad
+                if (codigoIngresado.isEmpty()) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Debe ingresar el código del vuelo.");
+                    return;
+                }
 
-            // Contamos cuántas filas hay ahora en la tabla
-            int totalVuelos = tblGestionVuelos.getRowCount();
+                if (!existeCodigoEnOfertas(codigoIngresado)) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "El código '" + codigoIngresado + "' no es una oferta válida.");
+                    return;
+                }
 
-            if (totalVuelos > 0) {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                        "Se han cargado " + totalVuelos + " vuelos exitosamente desde el archivo.",
-                        "Carga Exitosa",
-                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                        "El archivo está vacío o no existen vuelos registrados.",
-                        "Aviso",
-                        javax.swing.JOptionPane.WARNING_MESSAGE);
+                if (cbxTipoAvion.getSelectedIndex() <= 0) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Seleccione un tipo de avión.");
+                    return;
+                }
+
+                if (!modo.equalsIgnoreCase("Directo")) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Solo operamos vuelos Directos.");
+                    return;
+                }
+
+                // 3. Capturar datos técnicos (Números y Fechas)
+                double precio = Double.parseDouble(txtFiltroPrecio.getText().trim());
+                String fSalida = dateSalida.getDateStringOrEmptyString();
+                String fRegreso = dateRegreso.getDateStringOrEmptyString();
+                String hSalida = tmPickSalida.getTimeStringOrEmptyString();
+                String hLlegada = tmPickLlegada.getTimeStringOrEmptyString();
+
+                // 4. Construcción de Objetos (Composición)
+                modelo.Ruta ruta = new modelo.Ruta(origen, destino);
+                modelo.Avion avion = new modelo.Avion(nombreAvion);
+
+                // Creamos el vuelo con los datos reales
+                modelo.Vuelo nuevoVuelo = new modelo.Vuelo(codigoIngresado, ruta, avion,
+                        fSalida, fRegreso, hSalida, hLlegada, precio);
+
+                // 5. Guardado y Actualización
+                control.ManejadorArchivos manejador = new control.ManejadorArchivos();
+                manejador.guardarVuelo(nuevoVuelo);
+
+                javax.swing.JOptionPane.showMessageDialog(this, "Vuelo registrado con éxito.");
+
+                cargarDatosDesdeArchivo(); // Refresca la tabla automáticamente
+                btnLimpiar.doClick(); // Limpia la interfaz para el siguiente vuelo
+
+            } catch (NumberFormatException e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El precio debe ser un número válido.");
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar: " + e.getMessage());
             }
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error al cargar los datos: " + e.getMessage());
         }
     }//GEN-LAST:event_btnCargarDatosActionPerformed
 
     private void btnEliminarVueloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarVueloActionPerformed
-    int fila = tblGestionVuelos.getSelectedRow();
-        if (fila != -1) {
+        // 1. Verificar si hay una fila seleccionada
+        int filaSeleccionada = tblGestionVuelos.getSelectedRow();
+
+        if (filaSeleccionada == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione un vuelo de la tabla para eliminar.",
+                    "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 2. Obtener el código del vuelo de la fila seleccionada (Columna 0)
+        String codigo = tblGestionVuelos.getValueAt(filaSeleccionada, 0).toString();
+
+        // 3. Confirmación
+        int respuesta = javax.swing.JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de que desea eliminar el vuelo " + codigo + "?",
+                "Confirmar Eliminación", javax.swing.JOptionPane.YES_NO_OPTION);
+        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+            // 4. Eliminar de la tabla visualmente
             DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-            modelo.removeRow(fila);
-            lblResumen.setText("Vuelo eliminado del catálogo.");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Selecciona un vuelo de la tabla.");
+
+            // Ajuste por si la tabla está filtrada
+            int filaReal = tblGestionVuelos.convertRowIndexToModel(filaSeleccionada);
+            modelo.removeRow(filaReal);
+
+            // 5. Limpiar campos y resumen
+            limpiarCampos();
+            lblResumen.setText("Vuelo eliminado correctamente.");
+
+            javax.swing.JOptionPane.showMessageDialog(this, "El vuelo ha sido retirado del catálogo.");
         }
     }//GEN-LAST:event_btnEliminarVueloActionPerformed
 
     private void txtFiltroPrecioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFiltroPrecioKeyReleased
-        TableRowSorter<TableModel> ordenador = new TableRowSorter<>(tblGestionVuelos.getModel());
-        tblGestionVuelos.setRowSorter(ordenador);
-        
-        String filtro = txtFiltroPrecio.getText();
-        if (filtro.isEmpty()) {
-            ordenador.setRowFilter(null);
-        } else {
-            try {
-                double precioMaximo = Double.parseDouble(filtro);
-                // Filtra la columna 8 (Precio Base) para mostrar solo lo menor o igual
-                ordenador.setRowFilter(new RowFilter<TableModel, Integer>() {
-                    @Override
-                    public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                        double precioFila = Double.parseDouble(entry.getStringValue(8));
-                        return precioFila <= precioMaximo;
-                    }
-                });
-            } catch (NumberFormatException e) {
-                // Si el usuario escribe letras en el precio, no hacemos nada
-            }
-        }
+        aplicarFiltros();
     }//GEN-LAST:event_txtFiltroPrecioKeyReleased
 
     private void tblGestionVuelosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGestionVuelosMouseClicked
         int filaSeleccionada = tblGestionVuelos.getSelectedRow();
         if (filaSeleccionada != -1) {
-            String codigoVuelo = tblGestionVuelos.getValueAt(filaSeleccionada, 0).toString();
-            String origenVuelo = tblGestionVuelos.getValueAt(filaSeleccionada, 2).toString();
-            String destinoVuelo = tblGestionVuelos.getValueAt(filaSeleccionada, 3).toString();
+            String codigoVuelo = tblGestionVuelos.getValueAt
+                (filaSeleccionada, 0).toString();
+            String origenVuelo = tblGestionVuelos.getValueAt
+                (filaSeleccionada, 2).toString();
+            String destinoVuelo = tblGestionVuelos.getValueAt
+                (filaSeleccionada, 3).toString();
 
-            lblResumen.setText("Vuelo seleccionado: " + codigoVuelo + " | Trayecto: " + origenVuelo + " - " + destinoVuelo);
+            lblResumen.setText("Vuelo seleccionado: " + codigoVuelo + 
+                    " | Trayecto: " + origenVuelo + " - " + destinoVuelo);
         }
     }//GEN-LAST:event_tblGestionVuelosMouseClicked
+
+    private void cbxTipoAvionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxTipoAvionActionPerformed
+        aplicarFiltros();
+    }//GEN-LAST:event_cbxTipoAvionActionPerformed
+
+    private void txtCodigoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyReleased
+        aplicarFiltros();
+    }//GEN-LAST:event_txtCodigoKeyReleased
 
     /**
      * @param args the command line arguments
@@ -653,8 +695,10 @@ public class Catalogo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel JTitulo;
     private javax.swing.JButton btnCargarDatos;
     private javax.swing.JButton btnEliminarVuelo;
+    private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnNuevoVuelo;
     private javax.swing.JComboBox<String> cbxDestino;
     private javax.swing.JComboBox<String> cbxModo;
@@ -662,7 +706,6 @@ public class Catalogo extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cbxTipoAvion;
     private com.github.lgooddatepicker.components.DatePicker dateRegreso;
     private com.github.lgooddatepicker.components.DatePicker dateSalida;
-    private javax.swing.JButton jButton1;
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -685,61 +728,184 @@ public class Catalogo extends javax.swing.JFrame {
     private javax.swing.JTextField txtFiltroPrecio;
     // End of variables declaration//GEN-END:variables
 
-    private void cargarDatosIniciales() {
-        try {
-            control.ManejadorArchivos manejador = new control.ManejadorArchivos();
-            java.util.ArrayList<modelo.Vuelo> lista = manejador.cargarVuelos();
-
-            DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-            // Limpiamos la tabla por si acaso
-            modelo.setRowCount(0); 
-
-            for (modelo.Vuelo vuelo : lista) {
-                modelo.addRow(new Object[]{
-                    vuelo.getCodigo(), vuelo.getAvion().getNombre(),
-                    vuelo.getRuta().getOrigen(), vuelo.getRuta().getDestino(),
-                    vuelo.getHoraSalida(), vuelo.getHoraLlegada(),
-                    vuelo.getFechaSalida(), vuelo.getFechaRegreso(),
-                    vuelo.getPrecioBase()
-                });
-            }
-        } catch (Exception e) {
-            System.out.println("Aún no hay datos para cargar o error en ruta.");
+    private boolean validarCamposCompletos() {
+        StringBuilder faltantes = new StringBuilder();
+        boolean todoOk = true;
+        // Validación de Texto
+        if (txtCodigo.getText().trim().isEmpty()) {
+            faltantes.append("- Código del Vuelo\n");
+            todoOk = false;
         }
+        if (txtFiltroPrecio.getText().trim().isEmpty()) {
+            faltantes.append("- Precio del Vuelo\n");
+            todoOk = false;
+        }
+
+        // Validación de Fechas (JDateChooser)
+        if (dateSalida.getDate() == null) {
+            faltantes.append("- Fecha de Salida\n");
+            todoOk = false;
+        }
+        if (dateRegreso.getDate() == null) {
+            faltantes.append("- Fecha de Regreso\n");
+            todoOk = false;
+        }
+
+        // Validación de Horas (TimePicker)
+        if (tmPickSalida.getTime() == null) {
+            faltantes.append("- Hora de Salida\n");
+            todoOk = false;
+        }
+
+        // Si hay errores, mostramos la ventana emergente con la lista
+        if (!todoOk) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Para continuar, debe llenar los siguientes campos:\n"
+                            + faltantes.toString(), "Datos Faltantes",
+                            javax.swing.JOptionPane.WARNING_MESSAGE);
+        }
+
+        return todoOk;
+    }
+    
+    private boolean existeCodigoEnOfertas(String codigo) {
+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("vuelos.txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                // Comparamos el primer dato (Código) del archivo
+                if (datos.length > 0 && datos[0].equalsIgnoreCase(codigo)) {
+                    return true;
+                }
+            }
+        } catch (java.io.IOException e) {
+            System.out.println("No se pudo leer el archivo de ofertas.");
+        }
+        return false;
     }
     
     private void cargarDatosDesdeArchivo() {
-    DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-    modelo.setRowCount(0); // Limpia la tabla antes de cargar
-    
-    try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("vuelos.txt"))) {
-        String linea;
-        while ((linea = br.readLine()) != null) {
-            String[] datos = linea.split(",");
-            // El orden debe coincidir con tu método toString() de la clase Vuelo
-            modelo.addRow(new Object[]{
-                datos[0], // Código
-                datos[8], // Avión
-                datos[1], // Origen
-                datos[2], // Destino
-                datos[5], // Hora Salida
-                datos[6], // Hora Llegada
-                datos[3], // Fecha Salida
-                datos[4], // Fecha Regreso
-                datos[7]  // Precio Base
-            });
+        DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
+        modelo.setRowCount(0);
+        try (java.io.BufferedReader br = new java.io.BufferedReader
+            (new java.io.FileReader("vuelos.txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length >= 10) {
+                    String horaS = formatearAMPM(datos[5]);
+                    String horaL = formatearAMPM(datos[6]);
+
+                    modelo.addRow(new Object[]{
+                        datos[0], // Código
+                        datos[1], // Avión
+                        datos[2], // Origen
+                        datos[3], // Destino
+                        datos[4], // Fecha Salida
+                        horaS, // Hora Salida AM/PM
+                        horaL, // Hora Llegada AM/PM
+                        datos[7], // Fecha Retorno
+                        Double.parseDouble(datos[8]), // 8: Precio Double
+                        datos[9] // 9: Equipaje
+                    });
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error al cargar: " + e.getMessage());
         }
-    } catch (java.io.IOException e) {
-        System.out.println("Archivo no encontrado. Se creará uno nuevo al guardar un vuelo.");
     }
-}
+    
+    private boolean validarCoincidenciaConOferta(String codigo) {
+        try (java.io.BufferedReader br = new java.io.BufferedReader
+            (new java.io.FileReader("vuelos.txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length > 0 && datos[0].equalsIgnoreCase(codigo)) {
+                    return true; // Se encontró el código en las ofertas
+                }
+            }
+        } catch (java.io.IOException e) {
+            System.out.println("Error al validar oferta: " + e.getMessage());
+        }
+        return false; // El código no existe en el catálogo
+    }
+    
+    private String formatearAMPM(String hora24) {
+        try {
+            // De "15:00" a "03:00 PM"
+            java.time.LocalTime tiempo = java.time.LocalTime.parse(hora24);
+            return tiempo.format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a"));
+        } catch (Exception e) {
+            return hora24; // Retorna original si hay error
+        }
+    }
+
+    private void aplicarFiltros() {
+        TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>)
+                tblGestionVuelos.getRowSorter();
+        if (sorter == null) {
+            return;
+        }
+
+        List<RowFilter<Object, Object>> filtros = new ArrayList<>();
+        // 1. Código (Columna 0)
+        if (!txtCodigo.getText().trim().isEmpty()) {
+            // (?i) hace que "v001" encuentre a "V001"
+            filtros.add(RowFilter.regexFilter("(?i)" + txtCodigo.getText().trim(), 0));
+        }
+
+        // 2. Avión (Columna 1) - Basado en tu ComboBox cbxTipoAvion
+        if (cbxTipoAvion.getSelectedIndex() > 0) {
+            filtros.add(RowFilter.regexFilter(cbxTipoAvion.getSelectedItem().toString(), 1));
+        }
+
+        // 3. Origen y 4. Destino (Columnas 2 y 3)
+        if (cbxOrigen.getSelectedIndex() > 0) {
+            filtros.add(RowFilter.regexFilter(cbxOrigen.getSelectedItem().toString(), 2));
+        }
+        if (cbxDestino.getSelectedIndex() > 0) {
+            filtros.add(RowFilter.regexFilter(cbxDestino.getSelectedItem().toString(), 3));
+        }
+
+        // 5. Presupuesto (Columna 8)
+        String pres = txtFiltroPrecio.getText().trim();
+        if (!pres.isEmpty()) {
+            try {
+                double limite = Double.parseDouble(pres);
+                // Columna 8: Precio
+                filtros.add(RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, limite, 8));
+            } catch (NumberFormatException e) {
+            }
+        }
+
+        // 6. Filtro por Fechas (Columna 4) - CORRECCIÓN PARA DATEPICKER
+        if (dateSalida.getDate() != null) {
+            // Usamos el método propio del DatePicker para obtener el texto
+            String fechaS = dateSalida.getDateStringOrEmptyString();
+            filtros.add(RowFilter.regexFilter(fechaS, 4));
+        }
+
+        // 7. Filtro por Horas (Columna 5) - CORRECCIÓN PARA TIMEPICKER
+        if (tmPickSalida.getTime() != null) {
+            String horaS = tmPickSalida.getTimeStringOrEmptyString();
+            filtros.add(RowFilter.regexFilter(horaS, 5));
+        }
+
+        // Aplicar filtros combinados
+        if (filtros.isEmpty()) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.andFilter(filtros));
+        }
+    }
     
     private void limpiarCampos() {
         txtCodigo.setText("");
-        txtFiltroPrecio.setText(""); // Asegúrate que el nombre coincida con tu campo de precio
+        txtFiltroPrecio.setText("");
         dateSalida.clear();
         dateRegreso.clear();
-        tmPickSalida.clear(); // Revisa si así llamaste a tus TimePickers
+        tmPickSalida.clear(); 
         tmPickLlegada.clear();
         cbxOrigen.setSelectedIndex(0);
         cbxDestino.setSelectedIndex(0);

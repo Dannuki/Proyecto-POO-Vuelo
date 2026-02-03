@@ -21,6 +21,9 @@ public class Vuelo {
     private Avion avion;
 
     // Constructor
+    public Vuelo(){
+    }
+    
     public Vuelo(String codigo, Ruta ruta, Avion avion, String fSalida,
             String fRegreso, String hSalida, String hLlegada, double precio){
         this.codigo = codigo;

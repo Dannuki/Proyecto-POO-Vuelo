@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\control\ControladorLogin.java
+C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\control\ControladorPasajero.java
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\control\ManejadorArchivos.java
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\main\Aerolinea.java
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\ArchivoUsuarioRepositorio.java
@@ -11,20 +11,8 @@ C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proye
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Ruta.java
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Usuario.java
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Vuelo.java
+C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\servicios\GestorArchivos.java
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\vista\AccesoLogin.java
 C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\vista\Catalogo.java
-=======
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\control\ControladorLogin.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\control\ControladorPasajero.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\main\Aerolinea.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\ArchivoUsuarioRepositorio.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Equipaje.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\IUsuarioRepositorio.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Pasajero.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Persistencia.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Usuario.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\servicios\GestorArchivos.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\vista\AccesoLogin.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\vista\PanelPasajero.java
-C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\vista\VentanaRegistro.java
->>>>>>> 068bb93e02b9eaeb509a3635275e2fa089d4ba93
+C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\vista\PanelPasajero.java
+C:\Users\USER\Documents\Proyecto_Bimestral_II_Segundo_S\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\vista\VentanaRegistro.java

@@ -5,6 +5,7 @@
 package control;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,32 +22,34 @@ import modelo.Vuelo;
 public class ManejadorArchivos {
     private String nombreArchivo = "vuelos.txt";
 
-    // Guarda todos los vuelos de la tabla al archivo
-    public void guardarVuelos(ArrayList<Vuelo> lista) {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo))) {
-            for (Vuelo v : lista) {
-                pw.println(v.toString()); // Usamos el toString que ya creamos
-            }
+    public void guardarVuelo(Vuelo v) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo, true))) {
+            pw.println(v.toString()); 
         } catch (IOException e) {
-            System.err.println("Hubo un error al guardar: " + e.getMessage());
+            System.err.println("Error al guardar: " + e.getMessage());
         }
     }
 
-    // Lee el archivo y devuelve una lista de objetos Vuelo
+    // Lee el archivo y devuelve la lista de los 20 vuelos (o más)
     public ArrayList<Vuelo> cargarVuelos() {
         ArrayList<Vuelo> lista = new ArrayList<>();
+        File archivo = new File(nombreArchivo);
+        if (!archivo.exists()) return lista;
         try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] d = linea.split(",");
-                // Reconstruimos los objetos según el orden del toString
-                Ruta rut = new Ruta(d[1], d[2]);
-                Avion avio = new Avion(d[8]);
-                Vuelo vue = new Vuelo(d[0], rut, avio, d[3], d[4], d[5], d[6], Double.parseDouble(d[7]));
-                lista.add(vue);
+                if (d.length >= 9) { // Validamos que la linea esté completa
+                    Ruta rut = new Ruta(d[2], d[3]); // Origen y Destino según tu tabla
+                    Avion avio = new Avion(d[1]);    // Nombre del Avión
+                    // Constructor: Codigo, Ruta, Avion, FechaS, FechaR, HoraS, HoraL, Precio
+                    Vuelo vue = new Vuelo(d[0], rut, avio, d[4], d[7], d[5],
+                            d[6], Double.parseDouble(d[8]));
+                    lista.add(vue);
+                }
             }
-        } catch (IOException e) {
-            System.out.println("Archivo no encontrado, se creará uno nuevo.");
+        } catch (Exception e) {
+            System.out.println("Error al cargar datos: " + e.getMessage());
         }
         return lista;
     }
