@@ -55,8 +55,36 @@ private void agregarPestaña(String tipo, int numero) {
     // Truco: Capitalizamos la primera letra (Adulto 1) para que se vea bien
     String titulo = tipo.charAt(0) + tipo.substring(1).toLowerCase() + " " + numero;
     tabsPasajeros.addTab(titulo, ctrl.getVista());
+    
+    
+    
 }
 
+
+    public javax.swing.JButton getBtnContinuar() {
+        return btnContinuar;
+   
+}
+
+    // --- PEGAR ESTO ANTES DE LA ÚLTIMA LLAVE } EN VentanaRegistro.java ---
+
+    public java.util.List<modelo.Pasajero> obtenerPasajerosIngresados() throws Exception {
+        java.util.List<modelo.Pasajero> lista = new java.util.ArrayList<>();
+        
+        // Recorremos cada pestañita que creamos
+        for (control.ControladorPasajero ctrl : listaControladores) {
+            try {
+                // Intentamos sacar los datos (esto valida si están vacíos)
+                modelo.Pasajero p = ctrl.obtenerDatosControlados();
+                lista.add(p);
+            } catch (Exception e) {
+                // Si hay error (campo vacío), enfocamos esa pestaña automáticamente
+                tabsPasajeros.setSelectedComponent(ctrl.getVista());
+                throw e; // Lanzamos el error para que el Controlador muestre el mensaje
+            }
+        }
+        return lista;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -70,7 +98,6 @@ private void agregarPestaña(String tipo, int numero) {
         tabsPasajeros = new javax.swing.JTabbedPane();
         btnContinuar = new javax.swing.JButton();
         JTitulo = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(167, 208, 210));
@@ -115,19 +142,6 @@ private void agregarPestaña(String tipo, int numero) {
         JTitulo.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 36)); // NOI18N
         JTitulo.setText("Registro de Pasajeros");
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 289, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -140,9 +154,7 @@ private void agregarPestaña(String tipo, int numero) {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 36, 36))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,9 +162,7 @@ private void agregarPestaña(String tipo, int numero) {
                 .addGap(21, 21, 21)
                 .addComponent(JTitulo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -174,7 +184,7 @@ private void agregarPestaña(String tipo, int numero) {
             return; 
         }
     }
-    
+   
     // 2. GUARDAR EN TXT
     try {
         servicios.GestorArchivos.guardarDatos(pasajerosListos, "RegistroPasajeros.txt");
@@ -185,6 +195,8 @@ private void agregarPestaña(String tipo, int numero) {
     } catch (Exception e) {
         javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar archivo: " + e.getMessage());
     }
+    
+    // ... (aquí están tus variables declaration como private javax.swing.JButton btnContinuar; etc) ..
     }//GEN-LAST:event_btnContinuarActionPerformed
 
     /**
@@ -216,7 +228,6 @@ private void agregarPestaña(String tipo, int numero) {
     private javax.swing.JLabel JTitulo;
     private javax.swing.JButton btnContinuar;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JTabbedPane tabsPasajeros;
     // End of variables declaration//GEN-END:variables
 }

@@ -239,9 +239,9 @@ public modelo.Pasajero obtenerDatos() throws Exception {
 
         JPanelGen.setBackground(new java.awt.Color(255, 255, 255));
 
-        txtApellido.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtApellido.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         txtApellido.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        txtApellido.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtApellido.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtApellidoFocusGained(evt);
@@ -261,35 +261,35 @@ public modelo.Pasajero obtenerDatos() throws Exception {
             }
         });
 
-        cmbDocumento.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         cmbDocumento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo de Documento...", "Cédula de Identidad", "Pasaporte", " " }));
+        cmbDocumento.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
 
-        cmbNacionalidad.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         cmbNacionalidad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nacionalidad...", "Argentino", "Boliviano", "Brasileño", "Chileno", "Colombiano", "Costarricense", "Cubano", "Ecuatoriano", "Salvadoreño", "Hondureño", "Mexicano", "Nicaragüense", "Panameño" }));
+        cmbNacionalidad.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
 
         try {
             txtFechaNac.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##-##-####")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
-        txtFechaNac.setToolTipText("");
         txtFechaNac.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
+        txtFechaNac.setToolTipText("");
         txtFechaNac.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtFechaNacActionPerformed(evt);
             }
         });
 
+        jLabel1.setText("Fecha de Nacimiento en el formato dd-mm-aaaa");
         jLabel1.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(38, 61, 141));
-        jLabel1.setText("Fecha de Nacimiento en el formato dd-mm-aaaa");
 
-        cmbGenero1.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         cmbGenero1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Genero...", "Masculino", "Femenino", " " }));
+        cmbGenero1.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
 
-        txtDocumento.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtDocumento.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         txtDocumento.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        txtDocumento.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtDocumento.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 txtDocumentoMousePressed(evt);
@@ -301,13 +301,13 @@ public modelo.Pasajero obtenerDatos() throws Exception {
             }
         });
 
+        jLabel2.setText("Información de Contacto:");
         jLabel2.setFont(new java.awt.Font("Open Sauce One Light", 0, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(38, 61, 141));
-        jLabel2.setText("Información de Contacto:");
 
-        txtNombre.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtNombre.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         txtNombre.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        txtNombre.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtNombre.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtNombreFocusGained(evt);
@@ -327,9 +327,9 @@ public modelo.Pasajero obtenerDatos() throws Exception {
             }
         });
 
-        txtCorreo.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtCorreo.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         txtCorreo.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        txtCorreo.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtCorreo.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtCorreoFocusGained(evt);
@@ -349,9 +349,9 @@ public modelo.Pasajero obtenerDatos() throws Exception {
             }
         });
 
+        lblTituloTipo.setText("Datos del Pasajero");
         lblTituloTipo.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 24)); // NOI18N
         lblTituloTipo.setForeground(new java.awt.Color(38, 61, 141));
-        lblTituloTipo.setText("Datos del Pasajero");
 
         javax.swing.GroupLayout JPanelGenLayout = new javax.swing.GroupLayout(JPanelGen);
         JPanelGen.setLayout(JPanelGenLayout);

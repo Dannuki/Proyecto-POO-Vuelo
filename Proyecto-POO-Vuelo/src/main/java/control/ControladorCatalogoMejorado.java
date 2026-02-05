@@ -32,6 +32,25 @@ public class ControladorCatalogoMejorado {
         this.cargarDatosDesdeArchivo();
     }
 
+    // Método auxiliar para validar que solo ingresen enteros
+private int pedirNumero(String mensaje) {
+    while (true) {
+        String input = JOptionPane.showInputDialog(vista, mensaje);
+        if (input == null) return -1; // Botón Cancelar
+        if (input.trim().isEmpty()) return 0; // Si lo deja vacío cuenta como 0
+        try {
+            int valor = Integer.parseInt(input);
+            if (valor < 0) {
+                JOptionPane.showMessageDialog(vista, "No puede ingresar números negativos.");
+            } else {
+                return valor; // ¡Es válido!
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(vista, "Error: Ingrese solo números enteros (sin decimales ni letras).");
+        }
+    }
+}
+
     private void inicializarModulo() {
         // Configuramos el sorter desde el inicio
         DefaultTableModel modelo = (DefaultTableModel) vista.getTblGestionVuelos().getModel();
@@ -117,27 +136,69 @@ public class ControladorCatalogoMejorado {
                 vista.getTxtCodigo().requestFocus();
             }
         });
+    
+    
         
-        // 7. BOTÓN CONTINUAR CON LA COMPRA (NUEVO)
-        // Asumiendo que tienes un botón llamado btnContinuarCompra en tu vista
-        // Si no existe, deberás agregarlo en el diseño de la vista Catalogo
-        /*
-        vista.getBtnContinuarCompra().addActionListener(e -> {
-            int fila = vista.getTblGestionVuelos().getSelectedRow();
+    // BOTÓN CONTINUAR (CON VALIDACIÓN DE ENTEROS)
+vista.getBtnContinuar().addActionListener(evt -> {
+    int fila = vista.getTblGestionVuelos().getSelectedRow();
+    
+    if (fila != -1) {
+        // 1. Recuperar datos del vuelo
+        int modelRow = vista.getTblGestionVuelos().convertRowIndexToModel(fila);
+        javax.swing.table.DefaultTableModel modeloTabla = (javax.swing.table.DefaultTableModel) vista.getTblGestionVuelos().getModel();
+        
+        String codigo = modeloTabla.getValueAt(modelRow, 0).toString();
+        String avion = modeloTabla.getValueAt(modelRow, 1).toString();
+        String origen = modeloTabla.getValueAt(modelRow, 2).toString();
+        String destino = modeloTabla.getValueAt(modelRow, 3).toString();
+        String fecha = modeloTabla.getValueAt(modelRow, 4).toString();
+        String horaS = modeloTabla.getValueAt(modelRow, 5).toString();
+        String horaL = modeloTabla.getValueAt(modelRow, 6).toString();
+        double precio = Double.parseDouble(modeloTabla.getValueAt(modelRow, 8).toString());
+
+        modelo.Ruta ruta = new modelo.Ruta(origen, destino);
+        modelo.Avion avionObj = new modelo.Avion(avion);
+        modelo.Vuelo v = new modelo.Vuelo(codigo, ruta, avionObj, fecha, "", horaS, horaL, precio);
+        SesionGlobal.getInstancia().setVueloSeleccionado(v);
+
+        // 2. PEDIR PASAJEROS (CON VALIDACIÓN)
+        int adultos = pedirNumero("¿Cuántos ADULTOS viajan?");
+        if (adultos == -1) return; // Si canceló, salimos
+        
+        if (adultos > 0) {
+            int ninos = pedirNumero("¿Cuántos NIÑOS viajan? (2-11 años)");
+            if (ninos == -1) return;
             
-            if (fila == -1) {
-                JOptionPane.showMessageDialog(vista, 
-                    "Por favor seleccione un vuelo de la tabla.", 
-                    "Vuelo no seleccionado", 
-                    JOptionPane.WARNING_MESSAGE);
-                return;
+            int bebes = pedirNumero("¿Cuántos BEBÉS viajan? (0-23 meses)");
+            if (bebes == -1) return;
+
+            // Guardar
+            SesionGlobal.getInstancia().setCantAdultos(adultos);
+            SesionGlobal.getInstancia().setCantNinos(ninos);
+            SesionGlobal.getInstancia().setCantBebes(bebes);
+            
+            // Preguntar Equipaje
+            int resp = JOptionPane.showConfirmDialog(vista, "¿Desea equipaje de bodega (23kg) por $29?", "Equipaje", JOptionPane.YES_NO_OPTION);
+            if (resp == JOptionPane.YES_OPTION) {
+                // Asumimos 1 maleta por adulto+niño
+                SesionGlobal.getInstancia().setCostoTotalEquipaje(29.0 * (adultos + ninos));
+            } else {
+                SesionGlobal.getInstancia().setCostoTotalEquipaje(0.0);
             }
-            
-            iniciarProcesoCompra(fila);
-        });
-        */
+
+            // Cambio de ventana
+            vista.dispose();
+            new ControladorRegistro(adultos, ninos, bebes).iniciar(); 
+        } else {
+             JOptionPane.showMessageDialog(vista, "Debe viajar al menos 1 adulto.");
+        }
+    } else {
+        JOptionPane.showMessageDialog(vista, "Seleccione un vuelo.");
+    }
+});
         
-    } // AQUÍ CIERRA inicializarModulo
+    } 
 
     /**
      * NUEVO MÉTODO: Inicia el proceso de compra con el vuelo seleccionado

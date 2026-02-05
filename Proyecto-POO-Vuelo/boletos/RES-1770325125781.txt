@@ -1,0 +1,36 @@
+═══════════════════════════════════════════════════════════
+                   BOLETO ELECTRÓNICO                      
+═══════════════════════════════════════════════════════════
+
+Código de Reserva: RES-1770325125781
+Fecha de Emisión: 05/02/2026 15:58
+Estado: CONFIRMADA
+
+───────────────── INFORMACIÓN DEL VUELO ─────────────────
+Código de Vuelo: V002
+Ruta: Guayaquil → Cuenca
+Avión: Airbus A320neo
+Fecha de Salida: 2026-02-11
+Hora de Salida: 09:00
+Hora de Llegada: 09:30
+
+────────────────── PASAJEROS Y ASIENTOS ─────────────────
+
+Pasajero 1:
+  Nombre: Danny Ponce
+  Documento: Cédula de Identidad: 12123232
+  Tipo: ADULTO
+  Asiento: GEN
+  Equipaje: BODEGA_23KG - $29,00
+
+──────────────── DESGLOSE DE PRECIOS ────────────────────
+Pasajero 1: $35,50
+
+Subtotal Vuelos: $35,50
+Subtotal Equipajes: $29,00
+───────────────────────────────────────────────────────────
+TOTAL A PAGAR: $64,50
+Método de Pago: Tarjeta de Credito
+═══════════════════════════════════════════════════════════
+        ¡Gracias por volar con nosotros!                   
+═══════════════════════════════════════════════════════════

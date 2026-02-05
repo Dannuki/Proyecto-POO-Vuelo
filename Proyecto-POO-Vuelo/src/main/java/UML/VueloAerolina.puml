@@ -1,0 +1,151 @@
+@startuml
+
+' --- CONFIGURACIÓN VISUAL ---
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam style strictuml
+skinparam packageStyle rectangle
+
+package "Modelo (Entidades)" {
+    class Vuelo {
+        -String codigo
+        -double precioBase
+        -String fechaSalida
+        -String horaSalida
+        +getRuta() : Ruta
+        +getAvion() : Avion
+    }
+
+    class Ruta {
+        -String origen
+        -String destino
+    }
+
+    class Avion {
+        -String nombre
+    }
+
+    class Pasajero {
+        -String nombre
+        -String apellido
+        -String documento
+        +esNino() : boolean
+    }
+
+    enum Equipaje {
+        MOCHILA_MANO
+        BODEGA_23KG
+        +getPrecio() : double
+    }
+
+    class Reserva {
+        -String codigoReserva
+        -double precioTotal
+        -String estado
+        +confirmarReserva()
+        +agregarPasajero(Pasajero, String, Equipaje)
+    }
+
+    class Boleto {
+        -String metodoPago
+        -LocalDateTime fechaEmision
+        +generarBoletoTexto() : String
+    }
+}
+
+package "Vista (Interfaz Gráfica)" {
+    class Catalogo <<JFrame>> {
+        +getTblGestionVuelos() : JTable
+        +getBtnContinuar() : JButton
+    }
+
+    class VentanaRegistro <<JFrame>> {
+        -JTabbedPane tabsPasajeros
+        +getBtnContinuar() : JButton
+        +obtenerPasajerosIngresados() : List<Pasajero>
+    }
+
+    class PanelPasajero <<JPanel>> {
+        +configurarTipo(String, int)
+        +obtenerDatos() : Pasajero
+    }
+
+    class VentanaPago <<JFrame>> {
+        +getBtnContinuar() : JButton
+        +getTxtResumen() : JTextArea
+        +getLblMontoTotal() : JLabel
+        +getCbxMetodoPago() : JComboBox
+    }
+}
+
+package "Controlador (Lógica)" {
+    class SesionGlobal <<Singleton>> {
+        -static SesionGlobal instancia
+        -Vuelo vueloSeleccionado
+        -List<Pasajero> listaPasajeros
+        -int cantAdultos
+        -int cantNinos
+        -int cantBebes
+        -double costoTotalEquipaje
+        +getInstancia() : SesionGlobal
+    }
+
+    class ControladorCatalogoMejorado {
+        +inicializarModulo()
+        -pedirNumero(String) : int
+    }
+
+    class ControladorRegistro {
+        +procesarRegistro()
+        +iniciar()
+    }
+
+    class ControladorPasajero {
+        +configurarTipo(String, int)
+        +obtenerDatosControlados() : Pasajero
+    }
+
+    class ControladorPago {
+        +iniciar()
+        +cargarResumenVisual()
+        +actionPerformed(ActionEvent)
+    }
+}
+
+package "Servicios (Persistencia)" {
+    class GestorReservas {
+        +guardarReservaYBoleto(Reserva, Boleto) : String
+    }
+}
+
+' --- RELACIONES ---
+
+' Modelo
+Vuelo *-- Ruta
+Vuelo *-- Avion
+Reserva --> Vuelo
+Reserva "1" *-- "*" Pasajero
+Reserva "1" *-- "*" Equipaje
+Boleto --> Reserva
+
+' Controlador -> Vista (Asociación)
+ControladorCatalogoMejorado --> Catalogo : controla
+ControladorRegistro --> VentanaRegistro : controla
+ControladorPasajero --> PanelPasajero : controla
+ControladorPago --> VentanaPago : controla
+
+' Relaciones entre Controladores y Sesión (Dependencia)
+ControladorCatalogoMejorado ..> SesionGlobal : 1. Escribe Datos Vuelo
+ControladorRegistro ..> SesionGlobal : 2. Escribe Lista Pasajeros
+ControladorPago ..> SesionGlobal : 3. Lee Todos los Datos
+
+' Estructura interna de Registro
+ControladorRegistro "1" *-- "*" ControladorPasajero : gestiona múltiples
+VentanaRegistro *-- PanelPasajero : contiene
+
+' Flujo final
+ControladorPago ..> Reserva : crea
+ControladorPago ..> Boleto : crea
+ControladorPago ..> GestorReservas : usa para guardar
+
+@enduml
