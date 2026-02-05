@@ -18,7 +18,10 @@ public class Ruta {
     }
 
     public String getOrigen(){
-        return origen; }
+        return origen;
+    }
+    
     public String getDestino() {
-        return destino; }
+        return destino;
+    }
 }
