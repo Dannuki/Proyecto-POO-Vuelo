@@ -7,6 +7,7 @@ package servicios;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import modelo.Pasajero;
 
@@ -38,6 +39,14 @@ public class GestorArchivos {
             writer.write("-------------------------");
             writer.newLine();
             System.out.println("Archivo guardado en: " + ruta);
+        }
+    }
+    
+    public static void guardarVueloSeleccionado(String nombreArchivo, String contenido) {
+        try (PrintWriter out = new PrintWriter(new FileWriter(nombreArchivo))) {
+            out.println(contenido);
+        } catch (IOException e) {
+            System.out.println("Error al guardar: " + e.getMessage());
         }
     }
 }

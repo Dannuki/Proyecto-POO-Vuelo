@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import servicios.GestorArchivos;
 import vista.Catalogo;
 
 /**
@@ -66,20 +67,47 @@ public class ControladorCatalogo {
             }
         });
 
-        // 4. BOTÓN CARGAR DATOS
+        // 4. BOTÓN CARGAR DATOS (Actualizado para integración con Persona 5)
         vista.getBtnCargarDatos().addActionListener(e -> {
+            // Mantener tu validación inicial de seguridad
             int confirmacion = JOptionPane.showConfirmDialog(vista,
-                    "¿Desea cargar los datos desde el archivo y actualizar la lista?",
-                    "Confirmar Carga", JOptionPane.YES_NO_OPTION);
+                    "¿Desea guardar el vuelo seleccionado y preparar la información para el boleto?",
+                    "Confirmar Selección", JOptionPane.YES_NO_OPTION);
 
             if (confirmacion == JOptionPane.YES_OPTION) {
+                // Validación de campos del filtro
                 String faltantes = verificarCamposFaltantes();
 
                 if (faltantes.isEmpty()) {
-                    cargarDatosDesdeArchivo(); // Cargamos la info nueva
-                    limpiarTodo(); // LIMPIEZA TOTAL: Borra campos, resetea tabla y limpia el resumen
-                    JOptionPane.showMessageDialog(vista, "Datos cargados exitosamente.");
+                    //Verificar que haya algo seleccionado en la tabla
+                    int fila = vista.getTblGestionVuelos().getSelectedRow();
+
+                    if (fila != -1) {
+                        // 1. Extraer la información de la fila elegida
+                        String codigo = vista.getTblGestionVuelos().getValueAt(fila, 0).toString();
+                        String origen = vista.getTblGestionVuelos().getValueAt(fila, 1).toString();
+                        String destino = vista.getTblGestionVuelos().getValueAt(fila, 2).toString();
+                        String precio = vista.getTblGestionVuelos().getValueAt(fila, 5).toString();
+
+                        // 2. Formatear la línea para el TXT
+                        String infoParaBoleto = codigo + "," + origen + "," + destino + "," + precio;
+
+                        // 3. Persistencia: Guardar para que la Persona 5 pueda leerlo
+                        GestorArchivos.guardarVueloSeleccionado("vuelo_para_boleto.txt", infoParaBoleto);
+
+                        // 4. Tus acciones originales de limpieza y éxito
+                        cargarDatosDesdeArchivo();
+                        limpiarTodo();
+
+                        JOptionPane.showMessageDialog(vista,
+                                "¡Vuelo " + codigo + " guardado con éxito!\nYa puede continuar a la generación del boleto.");
+                    } else {
+                        JOptionPane.showMessageDialog(vista,
+                                "Por favor, seleccione un vuelo de la tabla antes de cargar los datos.",
+                                "Sin Selección", JOptionPane.WARNING_MESSAGE);
+                    }
                 } else {
+                    // Tu validación original de campos incompletos
                     JOptionPane.showMessageDialog(vista,
                             "Faltan los siguientes campos para proceder:\n" + faltantes,
                             "Datos Incompletos", JOptionPane.WARNING_MESSAGE);
