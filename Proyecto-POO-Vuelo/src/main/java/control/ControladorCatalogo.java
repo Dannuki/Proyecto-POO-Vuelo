@@ -68,20 +68,25 @@ public class ControladorCatalogo {
 
         // 4. BOTÓN CARGAR DATOS
         vista.getBtnCargarDatos().addActionListener(e -> {
-            int confirmacion = JOptionPane.showConfirmDialog(vista, "¿Desea cargar los datos?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            int confirmacion = JOptionPane.showConfirmDialog(vista,
+                    "¿Desea cargar los datos desde el archivo y actualizar la lista?",
+                    "Confirmar Carga", JOptionPane.YES_NO_OPTION);
+
             if (confirmacion == JOptionPane.YES_OPTION) {
                 String faltantes = verificarCamposFaltantes();
+
                 if (faltantes.isEmpty()) {
-                    cargarDatosDesdeArchivo();
-                    // LLAMADA VITAL: Vuelve a aplicar los filtros sobre los datos nuevos
-                    aplicarFiltros();
-                    JOptionPane.showMessageDialog(vista, "Datos cargados y filtrados exitosamente.");
+                    cargarDatosDesdeArchivo(); // Cargamos la info nueva
+                    limpiarTodo(); // LIMPIEZA TOTAL: Borra campos, resetea tabla y limpia el resumen
+                    JOptionPane.showMessageDialog(vista, "Datos cargados exitosamente.");
                 } else {
-                    JOptionPane.showMessageDialog(vista, "Faltan campos:\n" + faltantes, "Aviso", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(vista,
+                            "Faltan los siguientes campos para proceder:\n" + faltantes,
+                            "Datos Incompletos", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
-
+        
         // 5. BOTÓN ELIMINAR VUELO
         vista.getBtnEliminarVuelo().addActionListener(e -> {
             int fila = vista.getTblGestionVuelos().getSelectedRow();
@@ -101,6 +106,18 @@ public class ControladorCatalogo {
                 JOptionPane.showMessageDialog(vista, "El vuelo ha sido eliminado correctamente.");
             }
         });
+        
+        vista.getBtnNuevoVuelo().addActionListener(e -> {
+            int respuesta = JOptionPane.showConfirmDialog(vista,
+                    "¿Está seguro de iniciar un nuevo proceso? Se borrarán todos los datos actuales.",
+                    "Confirmar Nuevo Vuelo", JOptionPane.YES_NO_OPTION);
+
+            if (respuesta == JOptionPane.YES_OPTION) {
+                limpiarTodo(); // Llama al método que borra campos, resumen y resetea tabla
+                vista.getTxtCodigo().requestFocus(); //
+            }
+        });
+        
     } // AQUÍ CIERRA inicializarModulo
 
     // Método auxiliar para saber exactamente qué falta
@@ -215,14 +232,15 @@ public class ControladorCatalogo {
 
         // Limpieza de Fechas (DatePicker)
         vista.getDatesSalida().clear();
-        vista.getDateRegreso().clear(); // Asegúrate de que este sea el nombre en tu Vista
+        vista.getDateRegreso().clear();
 
         // Limpieza de Horas (TimePicker)
         vista.getTmPickSalida().clear();
-        vista.getTmPickLlegada().clear(); // Asegúrate de que este sea el nombre en tu Vista
+        vista.getTmPickLlegada().clear();
+        
+        vista.getLblResumen().setText("Seleccione un vuelo para ver el resumen.");
 
         // Resetear el resumen visual
-        // vista.getLblResumen().setText("Seleccione un vuelo para ver el resumen.");
         // Actualizar la tabla para mostrar todos los datos de nuevo
         aplicarFiltros();
     }
