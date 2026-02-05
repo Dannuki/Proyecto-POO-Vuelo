@@ -1,19 +1,26 @@
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\control\ControladorCatalogo.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\control\ControladorLogin.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\control\ControladorPasajero.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\control\ManejadorArchivos.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\main\Aerolinea.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\ArchivoUsuarioRepositorio.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Avion.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Equipaje.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\IUsuarioRepositorio.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Pasajero.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Persistencia.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Ruta.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Usuario.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\modelo\Vuelo.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\servicios\GestorArchivos.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\vista\AccesoLogin.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\vista\Catalogo.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\vista\PanelPasajero.java
-C:\Users\RICHARD\Proyecto-POO-Vuelo\Proyecto-POO-Vuelo\src\main\java\vista\VentanaRegistro.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\control\ControladorCatalogoMejorado.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\control\ControladorFlujoCompra.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\control\ControladorLogin.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\control\ControladorPasajero.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\control\ManejadorArchivos.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\control\ReservaControladorMejorado.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\main\Aerolinea.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\ArchivoUsuarioRepositorio.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Asiento.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Avion.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Boleto.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Equipaje.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\IUsuarioRepositorio.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Pasajero.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Persistencia.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Reserva.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Ruta.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Usuario.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\modelo\Vuelo.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\servicios\GestorArchivos.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\servicios\GestorReservas.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\vista\AccesoLogin.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\vista\Catalogo.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\vista\PanelPasajero.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\vista\ReservaFrame.java
+C:\Users\USUARIO\Documents\Proyecto POO\Proyecto-POO-Vuelo\src\main\java\vista\VentanaRegistro.java

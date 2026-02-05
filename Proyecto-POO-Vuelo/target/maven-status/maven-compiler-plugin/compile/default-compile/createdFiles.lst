@@ -1,6 +1,5 @@
 vista\AccesoLogin$4.class
-control\ControladorCatalogo$1.class
-control\ControladorCatalogo.class
+control\ControladorCatalogoMejorado.class
 control\ControladorPasajero.class
 vista\VentanaRegistro.class
 vista\Catalogo$14.class
@@ -13,6 +12,7 @@ vista\Catalogo$2.class
 modelo\Usuario.class
 vista\Catalogo$5.class
 modelo\Persistencia.class
+servicios\GestorReservas.class
 modelo\ArchivoUsuarioRepositorio.class
 vista\Catalogo$3.class
 vista\PanelPasajero$14.class
@@ -25,10 +25,13 @@ vista\PanelPasajero$13.class
 vista\PanelPasajero$8.class
 vista\Catalogo$15.class
 main\Aerolinea.class
+control\ReservaControladorMejorado.class
 vista\PanelPasajero$2.class
 modelo\IUsuarioRepositorio.class
+control\ControladorCatalogoMejorado$1.class
 modelo\Equipaje.class
 vista\PanelPasajero$9.class
+control\ControladorFlujoCompra.class
 vista\PanelPasajero$12.class
 servicios\GestorArchivos.class
 vista\Catalogo$9.class
@@ -45,6 +48,7 @@ vista\Catalogo$12.class
 control\ControladorLogin.class
 vista\Catalogo$7.class
 vista\PanelPasajero$4.class
+modelo\Boleto.class
 modelo\Vuelo.class
 vista\AccesoLogin$2.class
 vista\PanelPasajero$11.class

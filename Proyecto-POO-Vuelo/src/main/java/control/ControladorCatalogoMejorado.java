@@ -1,6 +1,5 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Controlador actualizado del Catálogo que inicia el flujo de compra
  */
 package control;
 
@@ -17,17 +16,18 @@ import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import vista.Catalogo;
+import modelo.Vuelo;
+import modelo.Ruta;
+import modelo.Avion;
 
-/**
- *
- * @author USER
- */
-public class ControladorCatalogo {
+public class ControladorCatalogoMejorado {
     private Catalogo vista;
     private TableRowSorter<DefaultTableModel> sorter;
+    private ControladorFlujoCompra flujoCompra;
 
-    public ControladorCatalogo(Catalogo vista) {
+    public ControladorCatalogoMejorado(Catalogo vista) {
         this.vista = vista;
+        this.flujoCompra = new ControladorFlujoCompra();
         this.inicializarModulo();
         this.cargarDatosDesdeArchivo();
     }
@@ -76,8 +76,8 @@ public class ControladorCatalogo {
                 String faltantes = verificarCamposFaltantes();
 
                 if (faltantes.isEmpty()) {
-                    cargarDatosDesdeArchivo(); // Cargamos la info nueva
-                    limpiarTodo(); // LIMPIEZA TOTAL: Borra campos, resetea tabla y limpia el resumen
+                    cargarDatosDesdeArchivo();
+                    limpiarTodo();
                     JOptionPane.showMessageDialog(vista, "Datos cargados exitosamente.");
                 } else {
                     JOptionPane.showMessageDialog(vista,
@@ -99,7 +99,6 @@ public class ControladorCatalogo {
             int confirmar = JOptionPane.showConfirmDialog(vista, "¿Está seguro de eliminar el vuelo seleccionado?", "Confirmar", JOptionPane.YES_NO_OPTION);
             if (confirmar == JOptionPane.YES_OPTION) {
                 DefaultTableModel modeloTabla = (DefaultTableModel) vista.getTblGestionVuelos().getModel();
-                // Convertimos el índice de la vista al índice del modelo por si hay filtros activos
                 int modelRow = vista.getTblGestionVuelos().convertRowIndexToModel(fila);
                 modeloTabla.removeRow(modelRow);
 
@@ -107,18 +106,90 @@ public class ControladorCatalogo {
             }
         });
         
+        // 6. BOTÓN NUEVO VUELO
         vista.getBtnNuevoVuelo().addActionListener(e -> {
             int respuesta = JOptionPane.showConfirmDialog(vista,
                     "¿Está seguro de iniciar un nuevo proceso? Se borrarán todos los datos actuales.",
                     "Confirmar Nuevo Vuelo", JOptionPane.YES_NO_OPTION);
 
             if (respuesta == JOptionPane.YES_OPTION) {
-                limpiarTodo(); // Llama al método que borra campos, resumen y resetea tabla
-                vista.getTxtCodigo().requestFocus(); //
+                limpiarTodo();
+                vista.getTxtCodigo().requestFocus();
             }
         });
         
+        // 7. BOTÓN CONTINUAR CON LA COMPRA (NUEVO)
+        // Asumiendo que tienes un botón llamado btnContinuarCompra en tu vista
+        // Si no existe, deberás agregarlo en el diseño de la vista Catalogo
+        /*
+        vista.getBtnContinuarCompra().addActionListener(e -> {
+            int fila = vista.getTblGestionVuelos().getSelectedRow();
+            
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(vista, 
+                    "Por favor seleccione un vuelo de la tabla.", 
+                    "Vuelo no seleccionado", 
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            iniciarProcesoCompra(fila);
+        });
+        */
+        
     } // AQUÍ CIERRA inicializarModulo
+
+    /**
+     * NUEVO MÉTODO: Inicia el proceso de compra con el vuelo seleccionado
+     */
+    private void iniciarProcesoCompra(int filaSeleccionada) {
+        try {
+            // Convertir índice de vista a modelo (por si hay filtros)
+            int modelRow = vista.getTblGestionVuelos().convertRowIndexToModel(filaSeleccionada);
+            DefaultTableModel modelo = (DefaultTableModel) vista.getTblGestionVuelos().getModel();
+            
+            // Extraer datos del vuelo seleccionado
+            String codigo = modelo.getValueAt(modelRow, 0).toString();
+            String avionNombre = modelo.getValueAt(modelRow, 1).toString();
+            String origen = modelo.getValueAt(modelRow, 2).toString();
+            String destino = modelo.getValueAt(modelRow, 3).toString();
+            String fechaSalida = modelo.getValueAt(modelRow, 4).toString();
+            String horaSalida = modelo.getValueAt(modelRow, 5).toString();
+            String horaLlegada = modelo.getValueAt(modelRow, 6).toString();
+            String fechaRegreso = modelo.getValueAt(modelRow, 7).toString();
+            double precio = Double.parseDouble(modelo.getValueAt(modelRow, 8).toString());
+            
+            // Crear objetos del modelo
+            Ruta ruta = new Ruta(origen, destino);
+            Avion avion = new Avion(avionNombre);
+            Vuelo vueloSeleccionado = new Vuelo(codigo, ruta, avion, fechaSalida, 
+                                                fechaRegreso, horaSalida, horaLlegada, precio);
+            
+            // Iniciar el flujo de compra
+            flujoCompra.seleccionarVuelo(vueloSeleccionado);
+            
+            // Mostrar resumen del vuelo
+            String resumen = String.format(
+                "Vuelo seleccionado:\n" +
+                "Código: %s\n" +
+                "Ruta: %s → %s\n" +
+                "Fecha: %s - Hora: %s\n" +
+                "Precio base: $%.2f",
+                codigo, origen, destino, fechaSalida, horaSalida, precio
+            );
+            
+            JOptionPane.showMessageDialog(vista, resumen, 
+                "Vuelo Seleccionado", JOptionPane.INFORMATION_MESSAGE);
+            
+            // Aquí deberías abrir la siguiente ventana del flujo
+            // Por ejemplo: abrirVentanaSeleccionPasajeros();
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(vista, 
+                "Error al procesar el vuelo: " + ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     // Método auxiliar para saber exactamente qué falta
     private String verificarCamposFaltantes() {
@@ -147,7 +218,7 @@ public class ControladorCatalogo {
     private void aplicarFiltros() {
         List<RowFilter<Object, Object>> filtros = new ArrayList<>();
 
-        /// 1. Código (Columna 0)
+        // 1. Código (Columna 0)
         if (!vista.getTxtCodigo().getText().trim().isEmpty()) {
                 filtros.add(RowFilter.regexFilter("(?i)" + vista.getTxtCodigo().getText().trim(), 0));
         }
@@ -157,13 +228,11 @@ public class ControladorCatalogo {
         agregarFiltroCombo(vista.getCbxDestino(), 3, filtros);
         agregarFiltroCombo(vista.getCbxTipoAvion(), 1, filtros);
         
-        
-        // --- FILTRO DE PRESUPUESTO NUMÉRICO (Columna 8) ---
+        // FILTRO DE PRESUPUESTO NUMÉRICO (Columna 8)
         String precioTexto = vista.getTxtFiltroPrecio().getText().trim();
         if (!precioTexto.isEmpty()) {
             try {
                 double limite = Double.parseDouble(precioTexto);
-                // Usamos BEFORE para incluir el valor exacto (limite + margen)
                 filtros.add(RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, limite + 0.01, 8));
             } catch (NumberFormatException e) { }
         }
@@ -179,23 +248,22 @@ public class ControladorCatalogo {
             String hora = vista.getTmPickSalida().getTimeStringOrEmptyString();
             filtros.add(RowFilter.regexFilter(hora, 5));
         }
+        
         // FILTRO DE HORA LLEGADA (Columna 6)
-        if (vista.getTmPickLlegada().getTime() != null) { // Asegúrate que el getter sea getTmPickLlegada
+        if (vista.getTmPickLlegada().getTime() != null) {
             String horaLlegada = vista.getTmPickLlegada().getTimeStringOrEmptyString();
             filtros.add(RowFilter.regexFilter(horaLlegada, 6));
         }
 
-        // FILTRO DE FECHA REGRESO (Columna 7)
         if(filtros.isEmpty()) {
-            sorter.setRowFilter(null); // Muestra todo si no hay filtros
-        }else {
-        sorter.setRowFilter(RowFilter.andFilter(filtros)); // Aplica todos los filtros juntos
-    }
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.andFilter(filtros));
+        }
     }
 
     private void agregarFiltroCombo(javax.swing.JComboBox combo, int columna, List<RowFilter<Object, Object>> lista) {
         if (combo.getSelectedIndex() > 0) {
-            // Usamos (?i) para que no importe si dice "Airbus" o "airbus"
             lista.add(RowFilter.regexFilter("(?i)" + combo.getSelectedItem().toString(), columna));
         }
     }
@@ -211,7 +279,7 @@ public class ControladorCatalogo {
                     modelo.addRow(new Object[]{
                         datos[0], datos[1], datos[2], datos[3], datos[4], 
                         datos[5], datos[6], datos[7], 
-                        Double.parseDouble(datos[8].trim())// VITAL: Cargar como Double para el filtro
+                        Double.parseDouble(datos[8].trim())
                     });
                 }
             }
@@ -221,27 +289,20 @@ public class ControladorCatalogo {
     }
 
     private void limpiarTodo() {
-        // Limpieza de campos de texto
         vista.getTxtCodigo().setText("");
         vista.getTxtFiltroPrecio().setText("");
-
-        // Limpieza de ComboBoxes
         vista.getCbxOrigen().setSelectedIndex(0);
         vista.getCbxDestino().setSelectedIndex(0);
         vista.getCbxTipoAvion().setSelectedIndex(0);
-
-        // Limpieza de Fechas (DatePicker)
         vista.getDatesSalida().clear();
         vista.getDateRegreso().clear();
-
-        // Limpieza de Horas (TimePicker)
         vista.getTmPickSalida().clear();
         vista.getTmPickLlegada().clear();
-        
         vista.getLblResumen().setText("Seleccione un vuelo para ver el resumen.");
-
-        // Resetear el resumen visual
-        // Actualizar la tabla para mostrar todos los datos de nuevo
         aplicarFiltros();
+    }
+    
+    public ControladorFlujoCompra getFlujoCompra() {
+        return flujoCompra;
     }
 }

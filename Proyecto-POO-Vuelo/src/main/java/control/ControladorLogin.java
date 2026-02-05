@@ -61,7 +61,7 @@ public class ControladorLogin {
     public void abrirModuloCatalogo() {
         // Instanciamos la Vista y el Controlador del Catálogo
         Catalogo miCatalogo = new Catalogo();
-        new ControladorCatalogo(miCatalogo); // Activa filtros y carga de datos
+        new ControladorCatalogoMejorado(miCatalogo); // Activa filtros y carga de datos
         
         miCatalogo.setVisible(true);
         miCatalogo.setLocationRelativeTo(null);
