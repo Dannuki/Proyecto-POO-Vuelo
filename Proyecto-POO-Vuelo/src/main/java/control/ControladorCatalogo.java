@@ -4,6 +4,7 @@
  */
 package control;
 
+import static com.sun.java.accessibility.util.AWTEventMonitor.addActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
@@ -23,15 +24,21 @@ import vista.Catalogo;
  */
 public class ControladorCatalogo {
     private Catalogo vista;
+    private TableRowSorter<DefaultTableModel> sorter;
 
     public ControladorCatalogo(Catalogo vista) {
         this.vista = vista;
-        this.cargarDatosDesdeArchivo();
         this.inicializarModulo();
+        this.cargarDatosDesdeArchivo();
     }
 
     private void inicializarModulo() {
-        // Esto hace que al escribir o cambiar un combo, la tabla se filtre sola
+        // Configuramos el sorter desde el inicio
+        DefaultTableModel modelo = (DefaultTableModel) vista.getTblGestionVuelos().getModel();
+        this.sorter = new TableRowSorter<>(modelo);
+        vista.getTblGestionVuelos().setRowSorter(sorter);
+
+        // 1. FILTROS EN TIEMPO REAL (Teclado)
         KeyAdapter filtroTeclado = new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -42,136 +49,141 @@ public class ControladorCatalogo {
         vista.getTxtCodigo().addKeyListener(filtroTeclado);
         vista.getTxtFiltroPrecio().addKeyListener(filtroTeclado);
 
-        // Filtros para Combos
+        // 2. FILTROS POR COMBOS Y FECHAS
         vista.getCbxOrigen().addActionListener(e -> aplicarFiltros());
         vista.getCbxDestino().addActionListener(e -> aplicarFiltros());
         vista.getCbxTipoAvion().addActionListener(e -> aplicarFiltros());
+        
+        // Listeners para componentes de fecha y hora (LGoodDatePicker)
+        vista.getDatesSalida().addDateChangeListener(e -> aplicarFiltros());
+        vista.getTmPickSalida().addTimeChangeListener(e -> aplicarFiltros());
 
-        // 2. BOTÓN LIMPIAR
+        // 3. BOTÓN LIMPIAR
         vista.getBtnLimpiar().addActionListener(e -> {
-            int respuesta = JOptionPane.showConfirmDialog(vista,
-                    "¿Desea limpiar todos los filtros?", "Confirmar",
-                        JOptionPane.YES_NO_OPTION);
+            int respuesta = JOptionPane.showConfirmDialog(vista, "¿Desea limpiar todos los filtros?", "Confirmar", JOptionPane.YES_NO_OPTION);
             if (respuesta == JOptionPane.YES_OPTION) {
-                vista.getTxtCodigo().setText("");
-                vista.getTxtFiltroPrecio().setText("");
-                vista.getCbxOrigen().setSelectedIndex(0);
-                vista.getCbxDestino().setSelectedIndex(0);
-                vista.getCbxTipoAvion().setSelectedIndex(0);
-                vista.getDatesSalida().clear();
-                vista.getDateRegreso().clear();
-                vista.getTmPickSalida().clear();
-                aplicarFiltros(); // Para mostrar todo de nuevo
+                limpiarTodo();
             }
         });
 
-        // 3. BOTÓN CARGAR DATOS
+        // 4. BOTÓN CARGAR DATOS
         vista.getBtnCargarDatos().addActionListener(e -> {
-            // 1. Alerta de confirmación antes de procesar
-            int confirmacion = JOptionPane.showConfirmDialog(vista,
-                    "¿Desea cargar los datos desde el archivo y actualizar la lista?",
-                    "Confirmar Carga", JOptionPane.YES_NO_OPTION);
-
+            int confirmacion = JOptionPane.showConfirmDialog(vista, "¿Desea cargar los datos?", "Confirmar", JOptionPane.YES_NO_OPTION);
             if (confirmacion == JOptionPane.YES_OPTION) {
-                // 2. Validación de seguridad: Todos los espacios deben estar llenos
-                if (validarEspaciosCompletos()) {
-                    cargarDatosDesdeArchivo(); // Ejecuta la lectura del archivo
-                    JOptionPane.showMessageDialog(vista, "Datos cargados exitosamente.");
+                String faltantes = verificarCamposFaltantes();
+                if (faltantes.isEmpty()) {
+                    cargarDatosDesdeArchivo();
+                    // LLAMADA VITAL: Vuelve a aplicar los filtros sobre los datos nuevos
+                    aplicarFiltros();
+                    JOptionPane.showMessageDialog(vista, "Datos cargados y filtrados exitosamente.");
                 } else {
-                    // Alerta si faltan datos en los filtros/campos
-                    JOptionPane.showMessageDialog(vista,
-                            "Para realizar esta acción, debe llenar todos los espacios del formulario.",
-                            "Datos Faltantes", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(vista, "Faltan campos:\n" + faltantes, "Aviso", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
-        
 
-        // 4. BOTÓN ELIMINAR VUELO
+        // 5. BOTÓN ELIMINAR VUELO
         vista.getBtnEliminarVuelo().addActionListener(e -> {
             int fila = vista.getTblGestionVuelos().getSelectedRow();
 
-            // 1. Alerta si no hay selección
             if (fila == -1) {
-                JOptionPane.showMessageDialog(vista,
-                        "No ha seleccionado ningún vuelo de la tabla.", "Aviso",
-                            JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(vista, "Seleccione un vuelo para eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            // 2. Alerta de seguridad si seleccionó algo
-            int confirmar = JOptionPane.showConfirmDialog(vista,
-                    "¿Está seguro de eliminar este vuelo?", "Confirmar",
-                        JOptionPane.YES_NO_OPTION);
+            int confirmar = JOptionPane.showConfirmDialog(vista, "¿Está seguro de eliminar el vuelo seleccionado?", "Confirmar", JOptionPane.YES_NO_OPTION);
             if (confirmar == JOptionPane.YES_OPTION) {
-                DefaultTableModel modelo = (DefaultTableModel)
-                        vista.getTblGestionVuelos().getModel();
-                modelo.removeRow(fila);
+                DefaultTableModel modeloTabla = (DefaultTableModel) vista.getTblGestionVuelos().getModel();
+                // Convertimos el índice de la vista al índice del modelo por si hay filtros activos
+                int modelRow = vista.getTblGestionVuelos().convertRowIndexToModel(fila);
+                modeloTabla.removeRow(modelRow);
 
-                // Mensaje en el resumen
-                // vista.getLblResumen().setText("Vuelo eliminado correctamente.");
-                JOptionPane.showMessageDialog(vista,
-                        "El vuelo ha sido retirado del catálogo.");
+                JOptionPane.showMessageDialog(vista, "El vuelo ha sido eliminado correctamente.");
             }
         });
-    }
-    
-    private void aplicarFiltros() {
-        DefaultTableModel modelo = (DefaultTableModel) vista.getTblGestionVuelos().getModel();
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
-        vista.getTblGestionVuelos().setRowSorter(sorter);
+    } // AQUÍ CIERRA inicializarModulo
 
+    // Método auxiliar para saber exactamente qué falta
+    private String verificarCamposFaltantes() {
+        StringBuilder sb = new StringBuilder();
+        if (vista.getTxtCodigo().getText().trim().isEmpty()) {
+            sb.append("- Código\n");
+        }
+        if (vista.getTxtFiltroPrecio().getText().trim().isEmpty()) {
+            sb.append("- Presupuesto\n");
+        }
+        if (vista.getDatesSalida().getDate() == null) {
+            sb.append("- Fecha de salida\n");
+        }
+        if (vista.getTmPickSalida().getTime() == null) {
+            sb.append("- Hora de salida\n");
+        }
+        if (vista.getCbxOrigen().getSelectedIndex() <= 0) {
+            sb.append("- Origen\n");
+        }
+        if (vista.getCbxDestino().getSelectedIndex() <= 0) {
+            sb.append("- Destino\n");
+        }
+        return sb.toString();
+    }
+
+    private void aplicarFiltros() {
         List<RowFilter<Object, Object>> filtros = new ArrayList<>();
 
-        // 1. Código (Columna 0)
+        /// 1. Código (Columna 0)
         if (!vista.getTxtCodigo().getText().trim().isEmpty()) {
-            filtros.add(RowFilter.regexFilter("(?i)" + vista.getTxtCodigo().getText().trim(), 0));
+                filtros.add(RowFilter.regexFilter("(?i)" + vista.getTxtCodigo().getText().trim(), 0));
         }
 
-        // 2. Origen (Col 2) y Destino (Col 3)
-        if (vista.getCbxOrigen().getSelectedIndex() > 0) {
-            filtros.add(RowFilter.regexFilter(vista.getCbxOrigen().getSelectedItem().toString(), 2));
-        }
-        if (vista.getCbxDestino().getSelectedIndex() > 0) {
-            filtros.add(RowFilter.regexFilter(vista.getCbxDestino().getSelectedItem().toString(), 3));
-        }
-
-        // 3. Avión (Columna 1)
-        if (vista.getCbxTipoAvion().getSelectedIndex() > 0) {
-            filtros.add(RowFilter.regexFilter(vista.getCbxTipoAvion().getSelectedItem().toString(), 1));
-        }
-
-        /// --- FILTRO DE PRESUPUESTO (Columna 8) ---
-    String precioTexto = vista.getTxtFiltroPrecio().getText().trim();
+        // Origen (Col 2), Destino (Col 3), Avión (Col 1)
+        agregarFiltroCombo(vista.getCbxOrigen(), 2, filtros);
+        agregarFiltroCombo(vista.getCbxDestino(), 3, filtros);
+        agregarFiltroCombo(vista.getCbxTipoAvion(), 1, filtros);
+        
+        
+        // --- FILTRO DE PRESUPUESTO NUMÉRICO (Columna 8) ---
+        String precioTexto = vista.getTxtFiltroPrecio().getText().trim();
         if (!precioTexto.isEmpty()) {
             try {
                 double limite = Double.parseDouble(precioTexto);
-                // Comparamos numéricamente: Menor o igual a (limite + 0.01)
+                // Usamos BEFORE para incluir el valor exacto (limite + margen)
                 filtros.add(RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, limite + 0.01, 8));
-            } catch (NumberFormatException e) {
-            }
+            } catch (NumberFormatException e) { }
         }
 
-        // --- FILTRO DE FECHA (Columna 4) ---
-        // Usamos el formato ISO que usa tu tabla (AAAA-MM-DD)
+        // FILTRO DE FECHA (Columna 4)
         if (vista.getDatesSalida().getDate() != null) {
-            String fechaBusqueda = vista.getDatesSalida().getDate().toString();
-            filtros.add(RowFilter.regexFilter(fechaBusqueda, 4));
+            String fecha = vista.getDatesSalida().getDateStringOrEmptyString();
+            filtros.add(RowFilter.regexFilter(fecha, 4));
         }
 
-        // --- FILTRO DE HORA (Columna 5) ---
+        // FILTRO DE HORA EXACTA (Columna 5)
         if (vista.getTmPickSalida().getTime() != null) {
-            String horaBusqueda = vista.getTmPickSalida().getTime().toString();
-            filtros.add(RowFilter.regexFilter(horaBusqueda, 5));
+            String hora = vista.getTmPickSalida().getTimeStringOrEmptyString();
+            filtros.add(RowFilter.regexFilter(hora, 5));
+        }
+        // FILTRO DE HORA LLEGADA (Columna 6)
+        if (vista.getTmPickLlegada().getTime() != null) { // Asegúrate que el getter sea getTmPickLlegada
+            String horaLlegada = vista.getTmPickLlegada().getTimeStringOrEmptyString();
+            filtros.add(RowFilter.regexFilter(horaLlegada, 6));
         }
 
-        // Aplicar todos los filtros juntos
-        if (!filtros.isEmpty()) {
-            sorter.setRowFilter(RowFilter.andFilter(filtros));
+        // FILTRO DE FECHA REGRESO (Columna 7)
+        if(filtros.isEmpty()) {
+            sorter.setRowFilter(null); // Muestra todo si no hay filtros
+        }else {
+        sorter.setRowFilter(RowFilter.andFilter(filtros)); // Aplica todos los filtros juntos
+    }
+    }
+
+    private void agregarFiltroCombo(javax.swing.JComboBox combo, int columna, List<RowFilter<Object, Object>> lista) {
+        if (combo.getSelectedIndex() > 0) {
+            // Usamos (?i) para que no importe si dice "Airbus" o "airbus"
+            lista.add(RowFilter.regexFilter("(?i)" + combo.getSelectedItem().toString(), columna));
         }
     }
 
-    private void cargarDatosDesdeArchivo() {
+    public void cargarDatosDesdeArchivo() {
         DefaultTableModel modelo = (DefaultTableModel) vista.getTblGestionVuelos().getModel();
         modelo.setRowCount(0);
         try (BufferedReader br = new BufferedReader(new FileReader("vuelos.txt"))) {
@@ -181,7 +193,8 @@ public class ControladorCatalogo {
                 if (datos.length >= 9) {
                     modelo.addRow(new Object[]{
                         datos[0], datos[1], datos[2], datos[3], datos[4], 
-                        datos[5], datos[6], datos[7], datos[8]
+                        datos[5], datos[6], datos[7], 
+                        Double.parseDouble(datos[8].trim())// VITAL: Cargar como Double para el filtro
                     });
                 }
             }
@@ -189,13 +202,28 @@ public class ControladorCatalogo {
             System.out.println("Error al cargar: " + e.getMessage());
         }
     }
-    
-    private boolean validarEspaciosCompletos() {
-        return !vista.getTxtCodigo().getText().trim().isEmpty()
-                && !vista.getTxtFiltroPrecio().getText().trim().isEmpty()
-                && vista.getDatesSalida().getDate() != null
-                && vista.getTmPickSalida().getTime() != null
-                && vista.getCbxOrigen().getSelectedIndex() > 0
-                && vista.getCbxDestino().getSelectedIndex() > 0;
+
+    private void limpiarTodo() {
+        // Limpieza de campos de texto
+        vista.getTxtCodigo().setText("");
+        vista.getTxtFiltroPrecio().setText("");
+
+        // Limpieza de ComboBoxes
+        vista.getCbxOrigen().setSelectedIndex(0);
+        vista.getCbxDestino().setSelectedIndex(0);
+        vista.getCbxTipoAvion().setSelectedIndex(0);
+
+        // Limpieza de Fechas (DatePicker)
+        vista.getDatesSalida().clear();
+        vista.getDateRegreso().clear(); // Asegúrate de que este sea el nombre en tu Vista
+
+        // Limpieza de Horas (TimePicker)
+        vista.getTmPickSalida().clear();
+        vista.getTmPickLlegada().clear(); // Asegúrate de que este sea el nombre en tu Vista
+
+        // Resetear el resumen visual
+        // vista.getLblResumen().setText("Seleccione un vuelo para ver el resumen.");
+        // Actualizar la tabla para mostrar todos los datos de nuevo
+        aplicarFiltros();
     }
 }

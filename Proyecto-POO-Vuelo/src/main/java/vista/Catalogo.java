@@ -273,8 +273,8 @@ public class Catalogo extends javax.swing.JFrame {
             }
         });
 
-        txtFiltroPrecio.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtFiltroPrecio.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
+        txtFiltroPrecio.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtFiltroPrecio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtFiltroPrecioActionPerformed(evt);
@@ -503,8 +503,8 @@ public class Catalogo extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                 .addComponent(btnContinuar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28))
         );
@@ -547,11 +547,7 @@ public class Catalogo extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNuevoVueloActionPerformed
 
     private void txtFiltroPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFiltroPrecioActionPerformed
-        try {
-            double max = Double.parseDouble(txtFiltroPrecio.getText());
-            DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-            // Aquí podrías recorrer la tabla y ocultar filas, 
-        } catch(Exception e) {}
+        //
     }//GEN-LAST:event_txtFiltroPrecioActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
