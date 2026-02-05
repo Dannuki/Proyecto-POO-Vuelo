@@ -35,18 +35,20 @@ public class ControladorLogin {
         Usuario usuarioValidado = repositorio.validar(usuario, contraseña);
 
         // 3. Tomamos decisiones según el resultado y el ROL
-        if (usuarioValidado != null) {
-            JOptionPane.showMessageDialog(vista, "Acceso correcto: " + usuarioValidado.getRol());
-            
-            if (usuarioValidado.getRol().equalsIgnoreCase("Admin")) {
-                abrirMenuAdmin();
-            } else {
-                abrirMenuCliente();
-            }
-            vista.dispose(); // Cerramos la ventana de login
-        } else {
-            JOptionPane.showMessageDialog(vista, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+// Dentro de tu método ejecutarLogin() en ControladorLogin.java
+
+    if (usuarioValidado != null) {
+    // 1. Guardamos al usuario en la mochila (SesionGlobal)
+    // Esto permite que la ventana de "Buscador" sepa quién compró el boleto.
+    SesionGlobal.get().setUsuario(usuarioValidado); 
+
+    // 2. Continuamos con el flujo normal
+    if (usuarioValidado.getRol().equalsIgnoreCase("Admin")) {
+        abrirMenuAdmin();
+    } else {
+        abrirMenuCliente();
+    }
+}
     }
 
     private void abrirMenuAdmin() {
