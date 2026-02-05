@@ -1,4 +1,6 @@
 vista\AccesoLogin$4.class
+control\ControladorCatalogo$1.class
+control\ControladorCatalogo.class
 control\ControladorPasajero.class
 vista\VentanaRegistro.class
 vista\Catalogo$14.class
@@ -22,7 +24,6 @@ modelo\Pasajero.class
 vista\PanelPasajero$13.class
 vista\PanelPasajero$8.class
 vista\Catalogo$15.class
-vista\AccesoLogin$6.class
 main\Aerolinea.class
 vista\PanelPasajero$2.class
 modelo\IUsuarioRepositorio.class
