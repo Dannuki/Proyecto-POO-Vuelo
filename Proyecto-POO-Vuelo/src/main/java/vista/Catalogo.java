@@ -24,10 +24,12 @@ import java.util.List;
 public class Catalogo extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Catalogo.class.getName());
-
+    
+    private control.ControladorBusqueda controladorBusqueda = new control.ControladorBusqueda();
     /**
      * Creates new form Catálogo
      */
+    private List<modelo.Vuelo> vuelosBaseCargados = new ArrayList<>();
     
 public Catalogo() {
     initComponents();
@@ -492,10 +494,12 @@ public Catalogo() {
 
     private void cbxDestinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxDestinoActionPerformed
         aplicarFiltros();
+        ejecutarFiltro();
     }//GEN-LAST:event_cbxDestinoActionPerformed
 
     private void cbxOrigenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxOrigenActionPerformed
         aplicarFiltros();
+        ejecutarFiltro();
     }//GEN-LAST:event_cbxOrigenActionPerformed
 
     private void cbxModoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxModoActionPerformed
@@ -784,36 +788,69 @@ public Catalogo() {
         return false;
     }
     
-    private void cargarDatosDesdeArchivo() {
-        DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-        modelo.setRowCount(0);
-        try (java.io.BufferedReader br = new java.io.BufferedReader
-            (new java.io.FileReader("vuelos.txt"))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] datos = linea.split(",");
-                if (datos.length >= 10) {
-                    String horaS = formatearAMPM(datos[5]);
-                    String horaL = formatearAMPM(datos[6]);
+ private void cargarDatosDesdeArchivo() {
+    DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
+    modelo.setRowCount(0);
+    vuelosBaseCargados.clear(); // Limpiamos la "bodega" antes de volver a llenar
 
-                    modelo.addRow(new Object[]{
-                        datos[0], // Código
-                        datos[1], // Avión
-                        datos[2], // Origen
-                        datos[3], // Destino
-                        datos[4], // Fecha Salida
-                        horaS, // Hora Salida AM/PM
-                        horaL, // Hora Llegada AM/PM
-                        datos[7], // Fecha Retorno
-                        Double.parseDouble(datos[8]), // 8: Precio Double
-                        datos[9] // 9: Equipaje
-                    });
-                }
+    try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("vuelos.txt"))) {
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            String[] datos = linea.split(",");
+            if (datos.length >= 10) {
+                // 1. CREAMOS EL OBJETO (Esto es lo que necesita tu parte de Persona 3)
+                // Usamos los índices del archivo: 2=Origen, 3=Destino, 1=Avión, 0=Código, etc.
+                modelo.Ruta ruta = new modelo.Ruta(datos[2], datos[3]);
+                modelo.Avion avion = new modelo.Avion(datos[1]);
+                modelo.Vuelo v = new modelo.Vuelo(
+                    datos[0], ruta, avion, datos[4], datos[7], 
+                    datos[5], datos[6], Double.parseDouble(datos[8])
+                );
+                
+                // 2. LO GUARDAMOS en la lista global para que el buscador lo use luego
+                vuelosBaseCargados.add(v);
+
+                // 3. LO MOSTRAMOS en la tabla (Tu código original con formato)
+                String horaS = formatearAMPM(datos[5]);
+                String horaL = formatearAMPM(datos[6]);
+                
+                modelo.addRow(new Object[]{
+                    datos[0], // Código
+                    datos[1], // Avión
+                    datos[2], // Origen
+                    datos[3], // Destino
+                    datos[4], // Fecha Salida
+                    horaS,    // Hora Salida formateada
+                    horaL,    // Hora Llegada formateada
+                    datos[7], // Fecha Retorno
+                    Double.parseDouble(datos[8]), // Precio
+                    datos[9]  // Equipaje
+                });
             }
-        } catch (Exception e) {
-            System.out.println("Error al cargar: " + e.getMessage());
         }
+    } catch (Exception e) {
+        System.out.println("Error al cargar: " + e.getMessage());
     }
+}
+private void actualizarTabla(List<modelo.Vuelo> filtrados) {
+    DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
+    modelo.setRowCount(0); // Borra todo para mostrar solo el filtro
+
+    for (modelo.Vuelo v : filtrados) {
+        modelo.addRow(new Object[]{
+            v.getCodigo(),
+            v.getAvion().getNombre(),
+            v.getRuta().getOrigen(),
+            v.getRuta().getDestino(),
+            v.getFechaSalida(),
+            formatearAMPM(v.getHoraSalida()), // Usamos tu método de formato
+            formatearAMPM(v.getHoraLlegada()),
+            v.getFechaRegreso(),
+            v.getPrecioBase(),
+            "Mano" // Valor por defecto
+        });
+    }
+}
     
     private boolean validarCoincidenciaConOferta(String codigo) {
         try (java.io.BufferedReader br = new java.io.BufferedReader
@@ -910,5 +947,29 @@ public Catalogo() {
         cbxOrigen.setSelectedIndex(0);
         cbxDestino.setSelectedIndex(0);
     }
+private void ejecutarFiltro() {
+    // 1. Obtener valores de la interfaz
+    String origen = cbxOrigen.getSelectedItem().toString();
+    String destino = cbxDestino.getSelectedItem().toString();
     
+    // 2. Manejar el presupuesto (si está vacío, usamos un número muy grande)
+    double presupuesto = 999999.0; 
+    try {
+        String textoPrecio = txtFiltroPrecio.getText().trim();
+        if (!textoPrecio.isEmpty()) {
+            presupuesto = Double.parseDouble(textoPrecio);
+        }
+    } catch (NumberFormatException e) {
+        // Si escriben letras, no filtramos por precio
+    }
+
+    // 3. LÓGICA DINÁMICA: Si el usuario no ha elegido ciudades, mostramos todo
+    if (origen.equals("-----------") || destino.equals("-----------")) {
+        actualizarTabla(vuelosBaseCargados); 
+    } else {
+        // 4. Si hay ciudades, usamos TU Controlador (Persona 3)
+        List<modelo.Vuelo> filtrados = controladorBusqueda.buscar(vuelosBaseCargados, origen, destino, presupuesto);
+        actualizarTabla(filtrados);
+    }
+}
 }
