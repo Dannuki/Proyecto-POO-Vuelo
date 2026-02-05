@@ -89,6 +89,13 @@ public class Catalogo extends javax.swing.JFrame {
         return btnEliminarVuelo;
     }
     
+    public javax.swing.JLabel getLblResumen() {
+        return lblResumen;
+    }
+    
+    public javax.swing.JButton getBtnNuevoVuelo() {
+        return btnNuevoVuelo;
+    }
     
 
     /**
@@ -536,14 +543,7 @@ public class Catalogo extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxModoActionPerformed
 
     private void btnNuevoVueloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoVueloActionPerformed
-        int respuesta = javax.swing.JOptionPane.showConfirmDialog(this,
-                "¿Desea crear un nuevo vuelo?", "Confirmar",
-                javax.swing.JOptionPane.YES_NO_OPTION);
-        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
-                
-            txtCodigo.requestFocus();
-        }
-        // Si elige NO, no se borra nada
+        //
     }//GEN-LAST:event_btnNuevoVueloActionPerformed
 
     private void txtFiltroPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFiltroPrecioActionPerformed
