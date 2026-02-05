@@ -29,56 +29,67 @@ public class Catalogo extends javax.swing.JFrame {
      * Creates new form Catálogo
      */
     
-public Catalogo() {
-    initComponents();
-    
-        // 1. Configuración del Sorter para filtrado múltiple
-    DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
-    
-    dateSalida.getSettings().setFormatForDatesCommonEra("yyyy-MM-dd");
-    dateRegreso.getSettings().setFormatForDatesCommonEra("yyyy-MM-dd");
-    
-    sorter.setComparator(8, (o1, o2) -> {
-        // Convertimos los objetos a Double para que la tabla sepa que son dinero
-        Double d1 = Double.valueOf(o1.toString());
-        Double d2 = Double.valueOf(o2.toString());
-        return d1.compareTo(d2);
-    });
-
-    
-        tblGestionVuelos.setRowSorter(sorter);
-        // 2. Cargar los 20 vuelos nacionales
-        cargarDatosDesdeArchivo();
-
-        // 3. Tus restricciones de fecha (Mantener)
-        LocalDate hoy = LocalDate.now();
-        dateSalida.getSettings().setDateRangeLimits(hoy, null);
-        dateRegreso.getSettings().setDateRangeLimits(hoy, null);
-
-        // 4. Tus restricciones de teclado para Precio (Mantener)
-        txtFiltroPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                char c = evt.getKeyChar();
-                if (!(Character.isDigit(c) || c == '.')) {
-                    evt.consume();
-                }
-                if (c == '.' && txtFiltroPrecio.getText().contains(".")) {
-                    evt.consume();
-                }
-            }
-        });
-
-        // 5. Tus restricciones de teclado para Código (Mantener)
-        txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                char c = evt.getKeyChar();
-                if (!Character.isLetterOrDigit(c)) {
-                    evt.consume();
-                }
-            }
-        });
+    public Catalogo() {
+        initComponents();
     }
+    
+    public javax.swing.JTable getTblGestionVuelos() {
+        return tblGestionVuelos;
+    }
+
+    public javax.swing.JTextField getTxtCodigo() {
+        return txtCodigo;
+    }
+
+    public javax.swing.JTextField getTxtFiltroPrecio() {
+        return txtFiltroPrecio;
+    }
+
+    public javax.swing.JComboBox<String> getCbxDestino() {
+        return cbxDestino;
+    }
+    
+    public javax.swing.JComboBox<String> getCbxOrigen() {
+        return cbxOrigen;
+    }
+    
+    public javax.swing.JComboBox<String> getCbxTipoAvion() {
+        return cbxTipoAvion;
+    }
+
+    public com.github.lgooddatepicker.components.DatePicker getDatesSalida() {
+        return dateSalida;
+    }
+
+    public com.github.lgooddatepicker.components.DatePicker getDateRegreso() {
+        return dateRegreso;
+    }
+    
+    public com.github.lgooddatepicker.components.TimePicker getTmPickSalida() {
+        return tmPickSalida;
+    }
+
+    public com.github.lgooddatepicker.components.TimePicker getTmPickLlegada() {
+        return tmPickLlegada;
+    }
+
+    public javax.swing.JButton getBtnLimpiar() {
+        return btnLimpiar;
+    }
+
+    public javax.swing.JButton getBtnContinuar() {
+        return btnContinuar;
+    }
+    
+    public javax.swing.JButton getBtnCargarDatos() {
+        return btnCargarDatos;
+    }
+
+    public javax.swing.JButton getBtnEliminarVuelo() {
+        return btnEliminarVuelo;
+    }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -120,6 +131,7 @@ public Catalogo() {
         tmPickSalida = new com.github.lgooddatepicker.components.TimePicker();
         tmPickLlegada = new com.github.lgooddatepicker.components.TimePicker();
         JTitulo = new javax.swing.JLabel();
+        btnContinuar = new javax.swing.JButton();
 
         jInternalFrame1.setVisible(true);
 
@@ -261,8 +273,8 @@ public Catalogo() {
             }
         });
 
-        txtFiltroPrecio.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtFiltroPrecio.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
+        txtFiltroPrecio.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtFiltroPrecio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtFiltroPrecioActionPerformed(evt);
@@ -326,6 +338,11 @@ public Catalogo() {
         txtCodigo.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
         txtCodigo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
         txtCodigo.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        txtCodigo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCodigoActionPerformed(evt);
+            }
+        });
         txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtCodigoKeyReleased(evt);
@@ -350,18 +367,24 @@ public Catalogo() {
         tmPickLlegada.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(69, 130, 177)));
         tmPickLlegada.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
 
+        JTitulo.setText("Selección de Voleto");
         JTitulo.setBackground(new java.awt.Color(0, 0, 0));
         JTitulo.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 24)); // NOI18N
-        JTitulo.setText("Selección de Voleto");
+
+        btnContinuar.setBackground(new java.awt.Color(69, 130, 177));
+        btnContinuar.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 12)); // NOI18N
+        btnContinuar.setForeground(new java.awt.Color(255, 255, 255));
+        btnContinuar.setText("Continuar");
+        btnContinuar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnContinuarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -427,6 +450,14 @@ public Catalogo() {
                         .addGap(18, 18, 18)
                         .addComponent(txtFiltroPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnContinuar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -472,8 +503,10 @@ public Catalogo() {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(115, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addComponent(btnContinuar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -491,11 +524,11 @@ public Catalogo() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cbxDestinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxDestinoActionPerformed
-        aplicarFiltros();
+        
     }//GEN-LAST:event_cbxDestinoActionPerformed
 
     private void cbxOrigenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxOrigenActionPerformed
-        aplicarFiltros();
+        
     }//GEN-LAST:event_cbxOrigenActionPerformed
 
     private void cbxModoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxModoActionPerformed
@@ -507,143 +540,30 @@ public Catalogo() {
                 "¿Desea crear un nuevo vuelo?", "Confirmar",
                 javax.swing.JOptionPane.YES_NO_OPTION);
         if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
-            limpiarCampos();
+                
             txtCodigo.requestFocus();
         }
         // Si elige NO, no se borra nada
     }//GEN-LAST:event_btnNuevoVueloActionPerformed
 
     private void txtFiltroPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFiltroPrecioActionPerformed
-        try {
-            double max = Double.parseDouble(txtFiltroPrecio.getText());
-            DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-            // Aquí podrías recorrer la tabla y ocultar filas, 
-        } catch(Exception e) {}
+        //
     }//GEN-LAST:event_txtFiltroPrecioActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-        // 1. Limpiar TextFields
-        txtCodigo.setText("");
-        txtFiltroPrecio.setText("");
-
-        // 2. Resetear ComboBoxes
-        cbxTipoAvion.setSelectedIndex(0);
-        cbxOrigen.setSelectedIndex(0);
-        cbxDestino.setSelectedIndex(0);
-        cbxModo.setSelectedIndex(0);
-
-        // 3. LIMPIAR FECHAS Y HORAS (LGoodDatePicker)
-        dateSalida.clear();
-        dateRegreso.clear(); 
-        tmPickSalida.clear();
-        tmPickLlegada.clear(); 
-
-        // 4. Limpiar el Label de resumen si tienes uno
-        lblResumen.setText("");
-
-        // 5. REFRESCAR LA TABLA
-        aplicarFiltros(); 
+        
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void btnCargarDatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarDatosActionPerformed
-        if (validarCamposCompletos()) {
-            try {
-                // 1. Capturar datos de entrada
-                String codigoIngresado = txtCodigo.getText().trim();
-                String nombreAvion = cbxTipoAvion.getSelectedItem().toString();
-                String origen = cbxOrigen.getSelectedItem().toString();
-                String destino = cbxDestino.getSelectedItem().toString();
-                String modo = cbxModo.getSelectedItem().toString();
-
-                // 2. Validaciones de Seguridad
-                if (codigoIngresado.isEmpty()) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Debe ingresar el código del vuelo.");
-                    return;
-                }
-
-                if (!existeCodigoEnOfertas(codigoIngresado)) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "El código '" + codigoIngresado + "' no es una oferta válida.");
-                    return;
-                }
-
-                if (cbxTipoAvion.getSelectedIndex() <= 0) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Seleccione un tipo de avión.");
-                    return;
-                }
-
-                if (!modo.equalsIgnoreCase("Directo")) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Solo operamos vuelos Directos.");
-                    return;
-                }
-
-                // 3. Capturar datos técnicos (Números y Fechas)
-                double precio = Double.parseDouble(txtFiltroPrecio.getText().trim());
-                String fSalida = dateSalida.getDateStringOrEmptyString();
-                String fRegreso = dateRegreso.getDateStringOrEmptyString();
-                String hSalida = tmPickSalida.getTimeStringOrEmptyString();
-                String hLlegada = tmPickLlegada.getTimeStringOrEmptyString();
-
-                // 4. Construcción de Objetos (Composición)
-                modelo.Ruta ruta = new modelo.Ruta(origen, destino);
-                modelo.Avion avion = new modelo.Avion(nombreAvion);
-
-                // Creamos el vuelo con los datos reales
-                modelo.Vuelo nuevoVuelo = new modelo.Vuelo(codigoIngresado, ruta, avion,
-                        fSalida, fRegreso, hSalida, hLlegada, precio);
-
-                // 5. Guardado y Actualización
-                control.ManejadorArchivos manejador = new control.ManejadorArchivos();
-                manejador.guardarVuelo(nuevoVuelo);
-
-                javax.swing.JOptionPane.showMessageDialog(this, "Vuelo registrado con éxito.");
-
-                cargarDatosDesdeArchivo(); // Refresca la tabla automáticamente
-                btnLimpiar.doClick(); // Limpia la interfaz para el siguiente vuelo
-
-            } catch (NumberFormatException e) {
-                javax.swing.JOptionPane.showMessageDialog(this, "El precio debe ser un número válido.");
-            } catch (Exception e) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar: " + e.getMessage());
-            }
-        }
+        
     }//GEN-LAST:event_btnCargarDatosActionPerformed
 
     private void btnEliminarVueloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarVueloActionPerformed
-        // 1. Verificar si hay una fila seleccionada
-        int filaSeleccionada = tblGestionVuelos.getSelectedRow();
-
-        if (filaSeleccionada == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "Por favor, seleccione un vuelo de la tabla para eliminar.",
-                    "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // 2. Obtener el código del vuelo de la fila seleccionada (Columna 0)
-        String codigo = tblGestionVuelos.getValueAt(filaSeleccionada, 0).toString();
-
-        // 3. Confirmación
-        int respuesta = javax.swing.JOptionPane.showConfirmDialog(this,
-                "¿Está seguro de que desea eliminar el vuelo " + codigo + "?",
-                "Confirmar Eliminación", javax.swing.JOptionPane.YES_NO_OPTION);
-        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
-            // 4. Eliminar de la tabla visualmente
-            DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-
-            // Ajuste por si la tabla está filtrada
-            int filaReal = tblGestionVuelos.convertRowIndexToModel(filaSeleccionada);
-            modelo.removeRow(filaReal);
-
-            // 5. Limpiar campos y resumen
-            limpiarCampos();
-            lblResumen.setText("Vuelo eliminado correctamente.");
-
-            javax.swing.JOptionPane.showMessageDialog(this, "El vuelo ha sido retirado del catálogo.");
-        }
+        
     }//GEN-LAST:event_btnEliminarVueloActionPerformed
 
     private void txtFiltroPrecioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFiltroPrecioKeyReleased
-        aplicarFiltros();
+        
     }//GEN-LAST:event_txtFiltroPrecioKeyReleased
 
     private void tblGestionVuelosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGestionVuelosMouseClicked
@@ -662,12 +582,20 @@ public Catalogo() {
     }//GEN-LAST:event_tblGestionVuelosMouseClicked
 
     private void cbxTipoAvionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxTipoAvionActionPerformed
-        aplicarFiltros();
+        
     }//GEN-LAST:event_cbxTipoAvionActionPerformed
 
     private void txtCodigoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyReleased
-        aplicarFiltros();
+
     }//GEN-LAST:event_txtCodigoKeyReleased
+
+    private void btnContinuarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContinuarActionPerformed
+        
+    }//GEN-LAST:event_btnContinuarActionPerformed
+
+    private void txtCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCodigoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCodigoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -697,6 +625,7 @@ public Catalogo() {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel JTitulo;
     private javax.swing.JButton btnCargarDatos;
+    private javax.swing.JButton btnContinuar;
     private javax.swing.JButton btnEliminarVuelo;
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnNuevoVuelo;
@@ -728,187 +657,4 @@ public Catalogo() {
     private javax.swing.JTextField txtFiltroPrecio;
     // End of variables declaration//GEN-END:variables
 
-    private boolean validarCamposCompletos() {
-        StringBuilder faltantes = new StringBuilder();
-        boolean todoOk = true;
-        // Validación de Texto
-        if (txtCodigo.getText().trim().isEmpty()) {
-            faltantes.append("- Código del Vuelo\n");
-            todoOk = false;
-        }
-        if (txtFiltroPrecio.getText().trim().isEmpty()) {
-            faltantes.append("- Precio del Vuelo\n");
-            todoOk = false;
-        }
-
-        // Validación de Fechas (JDateChooser)
-        if (dateSalida.getDate() == null) {
-            faltantes.append("- Fecha de Salida\n");
-            todoOk = false;
-        }
-        if (dateRegreso.getDate() == null) {
-            faltantes.append("- Fecha de Regreso\n");
-            todoOk = false;
-        }
-
-        // Validación de Horas (TimePicker)
-        if (tmPickSalida.getTime() == null) {
-            faltantes.append("- Hora de Salida\n");
-            todoOk = false;
-        }
-
-        // Si hay errores, mostramos la ventana emergente con la lista
-        if (!todoOk) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "Para continuar, debe llenar los siguientes campos:\n"
-                            + faltantes.toString(), "Datos Faltantes",
-                            javax.swing.JOptionPane.WARNING_MESSAGE);
-        }
-
-        return todoOk;
-    }
-    
-    private boolean existeCodigoEnOfertas(String codigo) {
-        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("vuelos.txt"))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] datos = linea.split(",");
-                // Comparamos el primer dato (Código) del archivo
-                if (datos.length > 0 && datos[0].equalsIgnoreCase(codigo)) {
-                    return true;
-                }
-            }
-        } catch (java.io.IOException e) {
-            System.out.println("No se pudo leer el archivo de ofertas.");
-        }
-        return false;
-    }
-    
-    private void cargarDatosDesdeArchivo() {
-        DefaultTableModel modelo = (DefaultTableModel) tblGestionVuelos.getModel();
-        modelo.setRowCount(0);
-        try (java.io.BufferedReader br = new java.io.BufferedReader
-            (new java.io.FileReader("vuelos.txt"))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] datos = linea.split(",");
-                if (datos.length >= 10) {
-                    String horaS = formatearAMPM(datos[5]);
-                    String horaL = formatearAMPM(datos[6]);
-
-                    modelo.addRow(new Object[]{
-                        datos[0], // Código
-                        datos[1], // Avión
-                        datos[2], // Origen
-                        datos[3], // Destino
-                        datos[4], // Fecha Salida
-                        horaS, // Hora Salida AM/PM
-                        horaL, // Hora Llegada AM/PM
-                        datos[7], // Fecha Retorno
-                        Double.parseDouble(datos[8]), // 8: Precio Double
-                        datos[9] // 9: Equipaje
-                    });
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error al cargar: " + e.getMessage());
-        }
-    }
-    
-    private boolean validarCoincidenciaConOferta(String codigo) {
-        try (java.io.BufferedReader br = new java.io.BufferedReader
-            (new java.io.FileReader("vuelos.txt"))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] datos = linea.split(",");
-                if (datos.length > 0 && datos[0].equalsIgnoreCase(codigo)) {
-                    return true; // Se encontró el código en las ofertas
-                }
-            }
-        } catch (java.io.IOException e) {
-            System.out.println("Error al validar oferta: " + e.getMessage());
-        }
-        return false; // El código no existe en el catálogo
-    }
-    
-    private String formatearAMPM(String hora24) {
-        try {
-            // De "15:00" a "03:00 PM"
-            java.time.LocalTime tiempo = java.time.LocalTime.parse(hora24);
-            return tiempo.format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a"));
-        } catch (Exception e) {
-            return hora24; // Retorna original si hay error
-        }
-    }
-
-    private void aplicarFiltros() {
-        TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>)
-                tblGestionVuelos.getRowSorter();
-        if (sorter == null) {
-            return;
-        }
-
-        List<RowFilter<Object, Object>> filtros = new ArrayList<>();
-        // 1. Código (Columna 0)
-        if (!txtCodigo.getText().trim().isEmpty()) {
-            // (?i) hace que "v001" encuentre a "V001"
-            filtros.add(RowFilter.regexFilter("(?i)" + txtCodigo.getText().trim(), 0));
-        }
-
-        // 2. Avión (Columna 1) - Basado en tu ComboBox cbxTipoAvion
-        if (cbxTipoAvion.getSelectedIndex() > 0) {
-            filtros.add(RowFilter.regexFilter(cbxTipoAvion.getSelectedItem().toString(), 1));
-        }
-
-        // 3. Origen y 4. Destino (Columnas 2 y 3)
-        if (cbxOrigen.getSelectedIndex() > 0) {
-            filtros.add(RowFilter.regexFilter(cbxOrigen.getSelectedItem().toString(), 2));
-        }
-        if (cbxDestino.getSelectedIndex() > 0) {
-            filtros.add(RowFilter.regexFilter(cbxDestino.getSelectedItem().toString(), 3));
-        }
-
-        // 5. Presupuesto (Columna 8)
-        String pres = txtFiltroPrecio.getText().trim();
-        if (!pres.isEmpty()) {
-            try {
-                double limite = Double.parseDouble(pres);
-                // Columna 8: Precio
-                filtros.add(RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, limite, 8));
-            } catch (NumberFormatException e) {
-            }
-        }
-
-        // 6. Filtro por Fechas (Columna 4) - CORRECCIÓN PARA DATEPICKER
-        if (dateSalida.getDate() != null) {
-            // Usamos el método propio del DatePicker para obtener el texto
-            String fechaS = dateSalida.getDateStringOrEmptyString();
-            filtros.add(RowFilter.regexFilter(fechaS, 4));
-        }
-
-        // 7. Filtro por Horas (Columna 5) - CORRECCIÓN PARA TIMEPICKER
-        if (tmPickSalida.getTime() != null) {
-            String horaS = tmPickSalida.getTimeStringOrEmptyString();
-            filtros.add(RowFilter.regexFilter(horaS, 5));
-        }
-
-        // Aplicar filtros combinados
-        if (filtros.isEmpty()) {
-            sorter.setRowFilter(null);
-        } else {
-            sorter.setRowFilter(RowFilter.andFilter(filtros));
-        }
-    }
-    
-    private void limpiarCampos() {
-        txtCodigo.setText("");
-        txtFiltroPrecio.setText("");
-        dateSalida.clear();
-        dateRegreso.clear();
-        tmPickSalida.clear(); 
-        tmPickLlegada.clear();
-        cbxOrigen.setSelectedIndex(0);
-        cbxDestino.setSelectedIndex(0);
-    }
-    
 }

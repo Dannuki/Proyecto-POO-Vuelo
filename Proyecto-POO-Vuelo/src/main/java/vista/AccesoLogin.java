@@ -153,8 +153,8 @@ public class AccesoLogin extends javax.swing.JFrame {
         InicionLabel.setText("Iniciar Sesión");
         jPanel2.add(InicionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 50, 250, 50));
 
-        usuarioLabel.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 24)); // NOI18N
         usuarioLabel.setText("Usuario");
+        usuarioLabel.setFont(new java.awt.Font("Open Sauce One ExtraBold", 0, 24)); // NOI18N
         jPanel2.add(usuarioLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 120, 100, 50));
 
         txtUsuario.setFont(new java.awt.Font("Open Sauce One Light", 0, 12)); // NOI18N
@@ -188,17 +188,6 @@ public class AccesoLogin extends javax.swing.JFrame {
         BtnEntrar.setFont(new java.awt.Font("Open Sauce One SemiBold", 0, 14)); // NOI18N
         BtnEntrar.setForeground(new java.awt.Color(255, 255, 255));
         BtnEntrar.setText("Iniciar");
-        BtnEntrar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                BtnEntrarMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                BtnEntrarMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                BtnEntrarMouseExited(evt);
-            }
-        });
         BtnEntrar.addActionListener(this::BtnEntrarActionPerformed);
         jPanel2.add(BtnEntrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 370, 140, 40));
 
@@ -232,10 +221,6 @@ public class AccesoLogin extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtContraActionPerformed
 
-    private void BtnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnEntrarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_BtnEntrarActionPerformed
-
     private void bannerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bannerMousePressed
         xMouse = evt.getX();
         yMouse = evt.getY();
@@ -261,10 +246,6 @@ public class AccesoLogin extends javax.swing.JFrame {
         extBtn.setForeground(Color.black);
     }//GEN-LAST:event_extSymbolMouseExited
 
-    private void BtnEntrarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnEntrarMouseEntered
-        BtnEntrar.setBackground(new Color(83, 155, 212));
-    }//GEN-LAST:event_BtnEntrarMouseEntered
-
     private void txtUsuarioMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtUsuarioMousePressed
        if(txtUsuario.getText().equals("Ingrese su nombre de usuario")){
        txtUsuario.setText("");
@@ -287,17 +268,11 @@ public class AccesoLogin extends javax.swing.JFrame {
        txtUsuario.setForeground(Color.gray);   
            
        }
-      
- 
     }//GEN-LAST:event_txtContraMousePressed
 
-    private void BtnEntrarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnEntrarMouseExited
-        BtnEntrar.setBackground(new Color(69,130,177));
-    }//GEN-LAST:event_BtnEntrarMouseExited
-
-    private void BtnEntrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnEntrarMouseClicked
-        javax.swing.JOptionPane.showMessageDialog(this, "Intento de login con los datos: \nUsuario: " + txtUsuario.getText() + "\nContraseña: " + String.valueOf(txtContra.getPassword()), "LOGIN", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_BtnEntrarMouseClicked
+    private void BtnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnEntrarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_BtnEntrarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -325,7 +300,7 @@ public class AccesoLogin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BtnEntrar;
+    public javax.swing.JButton BtnEntrar;
     private javax.swing.JLabel InicionLabel;
     private javax.swing.JPanel banner;
     private javax.swing.JLabel contraLabel;
